@@ -23,7 +23,7 @@ LDFLAGS = -m32 -Wl,-export-dynamic
 ##
 ## Libraries to link in
 ##
-LIBS =  -lm -lpthread -ldl -lrt
+LIBS =  -lm -lpthread -ldl -lrt -lgcrypt
 ##
 ## Uncomment the following line to link in C++ standard libs
 ## LIBS += -lstdc++
@@ -39,4 +39,4 @@ $(EXE_TARGET): $(CORE_OBJS)
 ## Application Link Rule
 ##
 $(APPTARGET).$(APP_EXT): $(OBJS)
-	$(COMPILER) -m32 -shared -o $@ $(OBJS) 
+	$(COMPILER) -m32 -shared -o $@ $(SHARED_LIB_LINK) $(OBJS) 
