@@ -11,7 +11,7 @@ include_directories(inc)
 
 include_directories(include
                     ${NOSENGINE_INCLUDE_DIRS}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../components/hwlib/sim/inc)
+                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../apps/hwlib/sim/inc)
 message(STATUS "Set NOS Engine Includes")
 
 # Build the pc-linux implementation as a library
