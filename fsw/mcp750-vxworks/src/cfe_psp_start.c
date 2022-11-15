@@ -80,10 +80,10 @@ IMPORT void sysPciWrite32 (UINT32, UINT32);
 
 
 /******************************************************************************
-**  Function:  CFE_PSP_Main()
+**  Function:  OS_Application_Startup()
 **
 **  Purpose:
-**    vxWorks/BSP Application entry point.
+**    Application startup entry point from OSAL BSP.
 **
 **  Arguments:
 **    (none)
@@ -91,12 +91,12 @@ IMPORT void sysPciWrite32 (UINT32, UINT32);
 **  Return:
 **    (none)
 */
-
-void CFE_PSP_Main( void )
+void OS_Application_Startup(void)
 {
    int    TicksPerSecond;
    uint32 reset_type;
    uint32 reset_subtype;
+   uint32 fs_id;
    char   reset_register;
    int32  Status;
 
@@ -111,6 +111,25 @@ void CFE_PSP_Main( void )
        /* note: use printf here, as OS_printf may not work */
        printf("CFE_PSP: OS_API_Init() failure\n");
        CFE_PSP_Panic(Status);
+
+       /*
+        * normally CFE_PSP_Panic() does not return, except
+        * during unit testing.  This return avoids executing
+        * the rest of this function in that case.
+        */
+       return;
+   }
+
+   /*
+   ** Set up the virtual FS mapping for the "/cf" directory
+   ** On this platform it is will use the CF:0 physical device.
+   */
+   Status = OS_FileSysAddFixedMap(&fs_id, "CF:0", "/cf");
+   if (Status != OS_SUCCESS)
+   {
+       /* Print for informational purposes --
+        * startup can continue, but loads may fail later, depending on config. */
+       OS_printf("CFE_PSP: OS_FileSysAddFixedMap() failure: %d\n", (int)Status);
    }
 
    /* 
@@ -129,7 +148,7 @@ void CFE_PSP_Main( void )
    ** Setup the pointer to the reserved area in vxWorks.
    ** This must be done before any of the reset variables are used.
    */
-   CFE_PSP_ReservedMemoryPtr = (CFE_PSP_ReservedMemory_t *)sysMemTop();
+   CFE_PSP_SetupReservedMemoryMap();
 
    /*
    ** Determine Reset type by reading the hardware reset register.
@@ -177,7 +196,7 @@ void CFE_PSP_Main( void )
       ** reboot functions use this reset type, we want to use this for a software
       ** commanded processor or Power on reset.
       */
-      if ( CFE_PSP_ReservedMemoryPtr->bsp_reset_type == CFE_PSP_RST_TYPE_POWERON)
+      if ( CFE_PSP_ReservedMemoryMap.BootPtr->bsp_reset_type == CFE_PSP_RST_TYPE_POWERON)
       {
          OS_printf("CFE_PSP: POWERON Reset: Software Hard Reset.\n");
          reset_type = CFE_PSP_RST_TYPE_POWERON;
@@ -196,6 +215,15 @@ void CFE_PSP_Main( void )
       reset_type = CFE_PSP_RST_TYPE_POWERON;
       reset_subtype = CFE_PSP_RST_SUBTYPE_UNDEFINED_RESET; 
    }   
+ 
+   /*
+    * If CFE fails to boot with a processor reset, 
+    * then make sure next time it uses a power on reset.
+    */
+   if ( reset_type == CFE_PSP_RST_TYPE_PROCESSOR ) 
+   {
+       CFE_PSP_ReservedMemoryMap.BootPtr->bsp_reset_type = CFE_PSP_RST_TYPE_POWERON;
+   }
 
    /*
    ** Initialize the reserved memory 
@@ -208,6 +236,24 @@ void CFE_PSP_Main( void )
    ** is complete.
    */
    CFE_PSP_MAIN_FUNCTION(reset_type,reset_subtype, 1, CFE_PSP_NONVOL_STARTUP_FILE);
+
+}
+
+/******************************************************************************
+**  Function:  OS_Application_Run()
+**
+**  Purpose:
+**    Idle Loop entry point from OSAL BSP.
+**
+**  Arguments:
+**    (none)
+**
+**  Return:
+**    (none)
+*/
+void OS_Application_Run(void)
+{
+   int    TicksPerSecond;
 
    /*
    ** Main loop for default task and simulated 1hz 
