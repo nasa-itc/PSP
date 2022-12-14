@@ -33,6 +33,8 @@
 #include <time.h>
 #include <pthread.h>
 
+#include "Client/CInterface.h"
+
 /*
 ** This define sets the number of memory ranges that are defined in the memory range defintion
 ** table.
@@ -144,6 +146,10 @@ typedef struct
  * this is used by exception handling to wake it when an event occurs
  */
 extern CFE_PSP_IdleTaskState_t  CFE_PSP_IdleTaskState;
+
+/* nos engine bus */
+extern NE_Bus      *CFE_PSP_Bus;
+extern int64_t      CFE_PSP_ticks_per_second;
 
 #endif
 
