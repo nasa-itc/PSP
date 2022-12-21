@@ -280,6 +280,7 @@ void OS_Application_Startup(void)
    */
    reset_subtype = CommandData.SubType;
 
+   CFE_PSP_ticks_per_second = TICKS_PER_SECOND;
 
    /*
    ** Initialize the OS API data structures
@@ -313,7 +314,6 @@ void OS_Application_Startup(void)
    ** Set the NOS Engine Timer Tick Callback
    */
    CFE_PSP_Bus = NE_create_bus(hub, ENGINE_BUS_NAME, ENGINE_SERVER_URI);
-   CFE_PSP_ticks_per_second = TICKS_PER_SECOND;
    NE_bus_add_time_tick_callback(CFE_PSP_Bus, CFE_PSP_NosTickCallback);
 
    /*
