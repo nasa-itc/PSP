@@ -86,8 +86,10 @@
 #define ENGINE_SERVER_URI       "tcp://127.0.0.1:12000"
 #define ENGINE_BUS_NAME         "command"
 #define TICKS_PER_SECOND        10
-NE_Bus      *CFE_PSP_Bus;
-int64_t      CFE_PSP_ticks_per_second;
+NE_Bus          *CFE_PSP_Bus;
+pthread_mutex_t  CFE_PSP_sim_time_mutex;
+NE_SimTime       CFE_PSP_sim_time;
+int64_t          CFE_PSP_ticks_per_second;
 
 /*
 ** Typedefs for this module
@@ -534,6 +536,9 @@ void OS_Application_Run(void)
 void CFE_PSP_NosTickCallback(NE_SimTime time)
 {
     CFE_PSP_TimerHandler(0);
+    pthread_mutex_lock(&CFE_PSP_sim_time_mutex);
+    CFE_PSP_sim_time = time;
+    pthread_mutex_unlock(&CFE_PSP_sim_time_mutex);
 }
 
 /******************************************************************************
