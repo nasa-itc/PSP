@@ -90,6 +90,7 @@ NE_Bus          *CFE_PSP_Bus;
 pthread_mutex_t  CFE_PSP_sim_time_mutex;
 NE_SimTime       CFE_PSP_sim_time;
 int64_t          CFE_PSP_ticks_per_second;
+extern void NOS_timer_fire(NE_SimTime time);
 
 /*
 ** Typedefs for this module
@@ -539,6 +540,7 @@ void CFE_PSP_NosTickCallback(NE_SimTime time)
     pthread_mutex_lock(&CFE_PSP_sim_time_mutex);
     CFE_PSP_sim_time = time;
     pthread_mutex_unlock(&CFE_PSP_sim_time_mutex);
+    NOS_timer_fire(time);
 }
 
 /******************************************************************************
