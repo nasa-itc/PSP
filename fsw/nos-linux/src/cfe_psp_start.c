@@ -85,7 +85,7 @@
 /* Constants used for NOS Engine Time and NOS Engine bus */
 #define ENGINE_SERVER_URI       "tcp://127.0.0.1:12000"
 #define ENGINE_BUS_NAME         "command"
-#define TICKS_PER_SECOND        10
+#define TICKS_PER_SECOND        100
 NE_Bus          *CFE_PSP_Bus;
 pthread_mutex_t  CFE_PSP_sim_time_mutex;
 NE_SimTime       CFE_PSP_sim_time;
