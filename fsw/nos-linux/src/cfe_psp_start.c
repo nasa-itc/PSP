@@ -536,7 +536,6 @@ void OS_Application_Run(void)
 */
 void CFE_PSP_NosTickCallback(NE_SimTime time)
 {
-    CFE_PSP_TimerHandler(0);
     pthread_mutex_lock(&CFE_PSP_sim_time_mutex);
     CFE_PSP_sim_time = time;
     pthread_mutex_unlock(&CFE_PSP_sim_time_mutex);
@@ -561,11 +560,7 @@ void CFE_PSP_TimerHandler (int signum)
       /*
       ** call the CFE_TIME 1hz ISR
       */
-      if((TimerCounter % TICKS_PER_SECOND) == 0)
-      {
-          CFE_PSP_1HZ_FUNCTION();
-          TimerCounter = 0;
-      }
+      if((TimerCounter % 4) == 0) CFE_PSP_1HZ_FUNCTION();
 
 	  /* update timer counter */
 	  TimerCounter++;
