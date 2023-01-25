@@ -100,7 +100,7 @@ void CFE_PSP_ExceptionSigHandler (int signo, siginfo_t *si, void *ctxt)
          * _not_ going through OSAL to read this as it may do something signal-unsafe...
          * (current implementation would be safe, but it is not guaranteed to always be).
          */
-        clock_gettime(CLOCK_MONOTONIC, &Buffer->context_info.event_time);
+        NOS_clock_gettime(CLOCK_MONOTONIC, &Buffer->context_info.event_time);
         memcpy(&Buffer->context_info.si, si, sizeof(Buffer->context_info.si));
         NumAddrs = backtrace(Buffer->context_info.bt_addrs, CFE_PSP_MAX_EXCEPTION_BACKTRACE_SIZE);
         Buffer->context_size = offsetof(CFE_PSP_Exception_ContextDataEntry_t, bt_addrs[NumAddrs]);

@@ -82,10 +82,15 @@
 #define CFE_PSP_CPU_NAME_LENGTH  32
 #define CFE_PSP_RESET_NAME_LENGTH 10
 
-/* Constants used for NOS Engine Time */
+/* Constants used for NOS Engine Time and NOS Engine bus */
 #define ENGINE_SERVER_URI       "tcp://127.0.0.1:12000"
 #define ENGINE_BUS_NAME         "command"
-#define TICKS_PER_SECOND        10
+#define TICKS_PER_SECOND        100
+NE_Bus          *CFE_PSP_Bus;
+pthread_mutex_t  CFE_PSP_sim_time_mutex;
+NE_SimTime       CFE_PSP_sim_time;
+int64_t          CFE_PSP_ticks_per_second;
+extern void NOS_timer_fire(NE_SimTime time);
 
 /*
 ** Typedefs for this module
@@ -134,9 +139,6 @@ uint32              CFE_PSP_CpuId;
 char                CFE_PSP_CpuName[CFE_PSP_CPU_NAME_LENGTH];
 
 CFE_PSP_IdleTaskState_t  CFE_PSP_IdleTaskState;
-
-/* nos engine bus */
-static NE_Bus      *bus;
 
 /*
 ** getopts parameter passing options string
@@ -281,6 +283,7 @@ void OS_Application_Startup(void)
    */
    reset_subtype = CommandData.SubType;
 
+   CFE_PSP_ticks_per_second = TICKS_PER_SECOND;
 
    /*
    ** Initialize the OS API data structures
@@ -304,6 +307,17 @@ void OS_Application_Startup(void)
     */
    memset(&CFE_PSP_IdleTaskState, 0, sizeof(CFE_PSP_IdleTaskState));
    CFE_PSP_IdleTaskState.ThreadID = pthread_self();
+
+   /*
+   ** Initialize the NOS engine link (note: this also creates the common hub)
+   */
+   nos_init_link();
+
+   /*
+   ** Set the NOS Engine Timer Tick Callback
+   */
+   CFE_PSP_Bus = NE_create_bus(hub, ENGINE_BUS_NAME, ENGINE_SERVER_URI);
+   NE_bus_add_time_tick_callback(CFE_PSP_Bus, CFE_PSP_NosTickCallback);
 
    /*
    ** Set up the timebase, if OSAL supports it
@@ -426,17 +440,6 @@ void OS_Application_Startup(void)
    }
 
    /*
-   ** Initialize the NOS engine link (note: this also creates the common hub)
-   */
-   nos_init_link();
-
-   /*
-   ** Set the NOS Engine Timer Tick Callback
-   */
-   bus = NE_create_bus(hub, ENGINE_BUS_NAME, ENGINE_SERVER_URI);
-   NE_bus_add_time_tick_callback(bus, CFE_PSP_NosTickCallback);
-
-   /*
    ** Call cFE entry point.
    */
    CFE_PSP_MAIN_FUNCTION(reset_type, reset_subtype, 1, CFE_PSP_NONVOL_STARTUP_FILE);
@@ -514,7 +517,7 @@ void OS_Application_Run(void)
    /*
    ** Cleanup NOS engine resources
    */
-   NE_destroy_bus(&bus);
+   NE_destroy_bus(&CFE_PSP_Bus);
    nos_destroy_link();
 }
 
@@ -533,7 +536,10 @@ void OS_Application_Run(void)
 */
 void CFE_PSP_NosTickCallback(NE_SimTime time)
 {
-    CFE_PSP_TimerHandler(0);
+    pthread_mutex_lock(&CFE_PSP_sim_time_mutex);
+    CFE_PSP_sim_time = time;
+    pthread_mutex_unlock(&CFE_PSP_sim_time_mutex);
+    NOS_timer_fire(time);
 }
 
 /******************************************************************************
@@ -554,11 +560,7 @@ void CFE_PSP_TimerHandler (int signum)
       /*
       ** call the CFE_TIME 1hz ISR
       */
-      if((TimerCounter % TICKS_PER_SECOND) == 0)
-      {
-          CFE_PSP_1HZ_FUNCTION();
-          TimerCounter = 0;
-      }
+      if((TimerCounter % 4) == 0) CFE_PSP_1HZ_FUNCTION();
 
 	  /* update timer counter */
 	  TimerCounter++;
