@@ -52,12 +52,12 @@ S
 #include <execinfo.h>
 #include <signal.h>
 
+#include "NOS-time.h"
+
 /*
  * A set of asynchronous signals which will be masked during other signal processing
  */
 sigset_t    CFE_PSP_AsyncMask;
-
-
 
 
 /***************************************************************************
