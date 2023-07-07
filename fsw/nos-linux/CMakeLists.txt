@@ -15,7 +15,7 @@ add_library(psp-${CFE_PSP_TARGETNAME}-impl OBJECT
     ../pc-linux/src/cfe_psp_ssr.c
     src/cfe_psp_start.c
     ../pc-linux/src/cfe_psp_support.c
-    #../pc-linux/src/cfe_psp_timer.c
+    src/cfe_psp_timer.c
     ../pc-linux/src/cfe_psp_watchdog.c
 )
 
