@@ -83,7 +83,7 @@
 #define CFE_PSP_RESET_NAME_LENGTH 10
 
 /* Constants used for NOS Engine Time and NOS Engine bus */
-#define ENGINE_SERVER_URI       "tcp://127.0.0.1:12000"
+#define ENGINE_SERVER_URI       "tcp://nos_engine_server:12000"
 #define ENGINE_BUS_NAME         "command"
 #define TICKS_PER_SECOND        100
 NE_Bus          *CFE_PSP_Bus;
