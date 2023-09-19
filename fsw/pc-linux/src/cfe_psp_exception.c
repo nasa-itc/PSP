@@ -1,22 +1,20 @@
-/*
-**  GSC-18128-1, "Core Flight Executive Version 6.7"
-**
-**  Copyright (c) 2006-2019 United States Government as represented by
-**  the Administrator of the National Aeronautics and Space Administration.
-**  All Rights Reserved.
-**
-**  Licensed under the Apache License, Version 2.0 (the "License");
-**  you may not use this file except in compliance with the License.
-**  You may obtain a copy of the License at
-**
-**    http://www.apache.org/licenses/LICENSE-2.0
-**
-**  Unless required by applicable law or agreed to in writing, software
-**  distributed under the License is distributed on an "AS IS" BASIS,
-**  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-**  See the License for the specific language governing permissions and
-**  limitations under the License.
-*/
+/************************************************************************
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ *
+ * Copyright (c) 2020 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
 
 /******************************************************************************
 S
@@ -55,26 +53,21 @@ S
 /*
  * A set of asynchronous signals which will be masked during other signal processing
  */
-sigset_t    CFE_PSP_AsyncMask;
-
-
-
+sigset_t CFE_PSP_AsyncMask;
 
 /***************************************************************************
  **                        FUNCTIONS DEFINITIONS
  ***************************************************************************/
 
-
 /*
-** Name: CFE_PSP_ExceptionSigHandler
 **
 ** Installed as a signal handler to log exception events.
 **
 */
-void CFE_PSP_ExceptionSigHandler (int signo, siginfo_t *si, void *ctxt)
+void CFE_PSP_ExceptionSigHandler(int signo, siginfo_t *si, void *ctxt)
 {
-    CFE_PSP_Exception_LogData_t* Buffer;
-    int NumAddrs;
+    CFE_PSP_Exception_LogData_t *Buffer;
+    int                          NumAddrs;
 
     /*
      * Note that the time between CFE_PSP_Exception_GetNextContextBuffer()
@@ -102,7 +95,7 @@ void CFE_PSP_ExceptionSigHandler (int signo, siginfo_t *si, void *ctxt)
          */
         clock_gettime(CLOCK_MONOTONIC, &Buffer->context_info.event_time);
         memcpy(&Buffer->context_info.si, si, sizeof(Buffer->context_info.si));
-        NumAddrs = backtrace(Buffer->context_info.bt_addrs, CFE_PSP_MAX_EXCEPTION_BACKTRACE_SIZE);
+        NumAddrs             = backtrace(Buffer->context_info.bt_addrs, CFE_PSP_MAX_EXCEPTION_BACKTRACE_SIZE);
         Buffer->context_size = offsetof(CFE_PSP_Exception_ContextDataEntry_t, bt_addrs[NumAddrs]);
         /* pthread_self() is signal-safe per POSIX.1-2013 */
         Buffer->sys_task_id = pthread_self();
@@ -117,7 +110,6 @@ void CFE_PSP_ExceptionSigHandler (int signo, siginfo_t *si, void *ctxt)
 }
 
 /*
-** Name: CFE_PSP_ExceptionSigHandlerSuspend
 **
 ** An extension of CFE_PSP_ExceptionSigHandler that also
 ** suspends the calling task and prevents returning to the
@@ -128,7 +120,7 @@ void CFE_PSP_ExceptionSigHandler (int signo, siginfo_t *si, void *ctxt)
 ** and re-trigger the exception, resulting in a loop.
 **
 */
-void CFE_PSP_ExceptionSigHandlerSuspend (int signo, siginfo_t *si, void *ctxt)
+void CFE_PSP_ExceptionSigHandlerSuspend(int signo, siginfo_t *si, void *ctxt)
 {
     /*
      * Perform normal exception logging
@@ -145,20 +137,19 @@ void CFE_PSP_ExceptionSigHandlerSuspend (int signo, siginfo_t *si, void *ctxt)
      * will be deleted by the CFE/OSAL.
      */
     sigsuspend(&CFE_PSP_AsyncMask);
-
-} /* end function */
+}
 
 /*
  * Helper function to call sigaction() to attach a signal handler
  */
-void CFE_PSP_AttachSigHandler (int signo)
+void CFE_PSP_AttachSigHandler(int signo)
 {
     struct sigaction sa;
 
     memset(&sa, 0, sizeof(sa));
     sa.sa_mask = CFE_PSP_AsyncMask;
 
-    if(!sigismember(&CFE_PSP_AsyncMask, signo))
+    if (!sigismember(&CFE_PSP_AsyncMask, signo))
     {
         /*
          * In the event that the handler is being installed for one of the
@@ -188,10 +179,7 @@ void CFE_PSP_AttachSigHandler (int signo)
     sigaction(signo, &sa, NULL);
 }
 
-
-
 /*
-**   Name: CFE_PSP_AttachExceptions
 **
 **   This is called from the CFE Main task, before any other threads
 **   are started.  Use this opportunity to install the handler for
@@ -258,13 +246,10 @@ void CFE_PSP_AttachExceptions(void)
 
 /*
 **
-**   Name: CFE_PSP_SetDefaultExceptionEnvironment
-**
 **   Purpose: This function sets a default exception environment that can be used
 **
 **   Notes: The exception environment is local to each task Therefore this must be
 **          called for each task that that wants to do floating point and catch exceptions
-**          Currently, this is automaticall called from OS_TaskRegister for every task
 */
 
 void CFE_PSP_SetDefaultExceptionEnvironment(void)
@@ -283,45 +268,44 @@ void CFE_PSP_SetDefaultExceptionEnvironment(void)
     CFE_PSP_AttachSigHandler(SIGFPE);
 }
 
-int32 CFE_PSP_ExceptionGetSummary_Impl(const CFE_PSP_Exception_LogData_t* Buffer, char *ReasonBuf, uint32 ReasonSize)
+int32 CFE_PSP_ExceptionGetSummary_Impl(const CFE_PSP_Exception_LogData_t *Buffer, char *ReasonBuf, uint32 ReasonSize)
 {
     const char *ComputedReason = "unknown";
 
     /* check the "code" within the siginfo structure, which reveals more info about the FP exception */
     if (Buffer->context_info.si.si_signo == SIGFPE)
     {
-        switch(Buffer->context_info.si.si_code)
+        switch (Buffer->context_info.si.si_code)
         {
-        case FPE_INTDIV:
-            ComputedReason = "Integer divide by zero";
-            break;
-        case FPE_INTOVF:
-            ComputedReason = "Integer overflow";
-            break;
-        case FPE_FLTDIV:
-            ComputedReason = "Floating-point divide by zero";
-            break;
-        case FPE_FLTOVF:
-            ComputedReason = "Floating-point overflow";
-            break;
-        case FPE_FLTUND:
-            ComputedReason = "Floating-point underflow";
-            break;
-        case FPE_FLTRES:
-            ComputedReason = "Floating-point inexact result";
-            break;
-        case FPE_FLTINV:
-            ComputedReason = "Invalid floating-point operation";
-            break;
-        case FPE_FLTSUB:
-            ComputedReason = "Subscript out of range";
-            break;
-        default:
-            ComputedReason = "Unknown SIGFPE";
+            case FPE_INTDIV:
+                ComputedReason = "Integer divide by zero";
+                break;
+            case FPE_INTOVF:
+                ComputedReason = "Integer overflow";
+                break;
+            case FPE_FLTDIV:
+                ComputedReason = "Floating-point divide by zero";
+                break;
+            case FPE_FLTOVF:
+                ComputedReason = "Floating-point overflow";
+                break;
+            case FPE_FLTUND:
+                ComputedReason = "Floating-point underflow";
+                break;
+            case FPE_FLTRES:
+                ComputedReason = "Floating-point inexact result";
+                break;
+            case FPE_FLTINV:
+                ComputedReason = "Invalid floating-point operation";
+                break;
+            case FPE_FLTSUB:
+                ComputedReason = "Subscript out of range";
+                break;
+            default:
+                ComputedReason = "Unknown SIGFPE";
         }
         (void)snprintf(ReasonBuf, ReasonSize, "%s at ip 0x%lx", ComputedReason,
-                (unsigned long)Buffer->context_info.si.si_addr);
-
+                       (unsigned long)Buffer->context_info.si.si_addr);
     }
     else if (Buffer->context_info.si.si_signo == SIGINT)
     {
@@ -335,10 +319,8 @@ int32 CFE_PSP_ExceptionGetSummary_Impl(const CFE_PSP_Exception_LogData_t* Buffer
          * POSIX 2008 does provide a strsignal() function to get the name, but this
          * is a newer spec than what is targeted by CFE, so just print the number.
          */
-        (void)snprintf(ReasonBuf, ReasonSize, "Caught Signal %d",Buffer->context_info.si.si_signo);
+        (void)snprintf(ReasonBuf, ReasonSize, "Caught Signal %d", Buffer->context_info.si.si_signo);
     }
 
     return CFE_PSP_SUCCESS;
 }
-
-
