@@ -49,6 +49,7 @@ add_executable(coverage-${CFE_PSP_TARGETNAME}-testrunner
 target_link_libraries(coverage-${CFE_PSP_TARGETNAME}-testrunner
     ${UT_COVERAGE_LINK_FLAGS}
     ut-adaptor-${CFE_PSP_TARGETNAME}
+    psp_module_api
     ut_psp_cfe_stubs
     ut_psp_libc_stubs
     ut_osapi_stubs
@@ -58,6 +59,6 @@ target_link_libraries(coverage-${CFE_PSP_TARGETNAME}-testrunner
 add_test(coverage-${CFE_PSP_TARGETNAME} coverage-${CFE_PSP_TARGETNAME}-testrunner)
 
 foreach(TGT ${INSTALL_TARGET_LIST})
-    install(TARGETS coverage-${CFE_PSP_TARGETNAME}-testrunner DESTINATION ${TGTNAME}/${UT_INSTALL_SUBDIR})
+    install(TARGETS coverage-${CFE_PSP_TARGETNAME}-testrunner DESTINATION ${TGT}/${UT_INSTALL_SUBDIR})
 endforeach()
 

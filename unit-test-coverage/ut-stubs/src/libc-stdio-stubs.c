@@ -1,12 +1,20 @@
-/*
- *      Copyright (c) 2019, United States government as represented by the
- *      administrator of the National Aeronautics Space Administration.
- *      All rights reserved. This software was created at NASA Goddard
- *      Space Flight Center pursuant to government contracts.
+/************************************************************************
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
  *
- *      This is governed by the NASA Open Source Agreement and may be used,
- *      distributed and modified only according to the terms of that agreement.
- */
+ * Copyright (c) 2020 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
 
 /* PSP coverage stub replacement for stdio.h */
 #include <string.h>
@@ -14,16 +22,16 @@
 #include <stdio.h>
 #include "utstubs.h"
 
-#include <PCS_stdio.h>
+#include "PCS_stdio.h"
 
 struct PCS_FILE
 {
     int f;
 };
 
-#define PCS_STDIO_MAX_SIZE      0x01000000
+#define PCS_STDIO_MAX_SIZE 0x01000000
 
-int PCS_fclose (PCS_FILE * stream)
+int PCS_fclose(PCS_FILE *stream)
 {
     int32 Status;
 
@@ -32,9 +40,9 @@ int PCS_fclose (PCS_FILE * stream)
     return Status;
 }
 
-char *PCS_fgets (char * s, int n, PCS_FILE * stream)
+char *PCS_fgets(char *s, int n, PCS_FILE *stream)
 {
-    int32 Status;
+    int32  Status;
     uint32 CopySize;
 
     Status = UT_DEFAULT_IMPL_RC(PCS_fgets, PCS_STDIO_MAX_SIZE);
@@ -79,11 +87,11 @@ char *PCS_fgets (char * s, int n, PCS_FILE * stream)
     return s;
 }
 
-PCS_FILE *PCS_fopen (const char * filename, const char * modes)
+PCS_FILE *PCS_fopen(const char *filename, const char *modes)
 {
-    int32 Status;
-    PCS_FILE *retval;
-    static PCS_FILE FOPEN_FP = { 0 };
+    int32           Status;
+    PCS_FILE *      retval;
+    static PCS_FILE FOPEN_FP = {0};
 
     Status = UT_DEFAULT_IMPL(PCS_fopen);
 
@@ -99,7 +107,7 @@ PCS_FILE *PCS_fopen (const char * filename, const char * modes)
     return retval;
 }
 
-int PCS_fputs (const char * s, PCS_FILE * stream)
+int PCS_fputs(const char *s, PCS_FILE *stream)
 {
     int32 Status;
 
@@ -108,7 +116,7 @@ int PCS_fputs (const char * s, PCS_FILE * stream)
     return Status;
 }
 
-int PCS_putchar (int c)
+int PCS_putchar(int c)
 {
     int32 Status;
 
@@ -117,8 +125,7 @@ int PCS_putchar (int c)
     return Status;
 }
 
-
-int PCS_remove (const char * filename)
+int PCS_remove(const char *filename)
 {
     int32 Status;
 
@@ -127,7 +134,7 @@ int PCS_remove (const char * filename)
     return Status;
 }
 
-int PCS_rename (const char * old, const char * nw)
+int PCS_rename(const char *old, const char *nw)
 {
     int32 Status;
 
@@ -136,10 +143,10 @@ int PCS_rename (const char * old, const char * nw)
     return Status;
 }
 
-int PCS_snprintf (char * s, size_t maxlen, const char * format, ...)
+int PCS_snprintf(char *s, size_t maxlen, const char *format, ...)
 {
-    int32 Status;
-    int actual = 0;
+    int32   Status;
+    int     actual = 0;
     va_list ap;
 
     Status = UT_DEFAULT_IMPL(PCS_snprintf);
@@ -148,7 +155,7 @@ int PCS_snprintf (char * s, size_t maxlen, const char * format, ...)
     if (Status >= 0)
     {
         va_start(ap, format);
-        actual = vsnprintf(s,maxlen,format,ap);
+        actual = vsnprintf(s, maxlen, format, ap);
         va_end(ap);
     }
 
@@ -160,10 +167,10 @@ int PCS_snprintf (char * s, size_t maxlen, const char * format, ...)
     return actual;
 }
 
-int PCS_vsnprintf (char * s, size_t maxlen, const char * format, PCS_va_list arg)
+int PCS_vsnprintf(char *s, size_t maxlen, const char *format, PCS_va_list arg)
 {
     int32 Status;
-    int actual = 0;
+    int   actual = 0;
 
     Status = UT_DEFAULT_IMPL(PCS_vsnprintf);
 
@@ -171,7 +178,7 @@ int PCS_vsnprintf (char * s, size_t maxlen, const char * format, PCS_va_list arg
      * cannot do the real vsnprintf because we lost the args. */
     if (Status >= 0)
     {
-        actual = snprintf(s,maxlen,"%s",format);
+        actual = snprintf(s, maxlen, "%s", format);
     }
 
     if (Status != 0)
@@ -182,16 +189,13 @@ int PCS_vsnprintf (char * s, size_t maxlen, const char * format, PCS_va_list arg
     return actual;
 }
 
-int PCS_printf (const char * format, ...)
+int PCS_printf(const char *format, ...)
 {
     return UT_DEFAULT_IMPL(PCS_printf);
 }
 
+static PCS_FILE LOCAL_FP[3] = {{10}, {11}, {12}};
 
-static PCS_FILE LOCAL_FP[3] = { { 10 }, { 11 }, { 12 } };
-
-PCS_FILE*    PCS_stdin = &LOCAL_FP[0];
-PCS_FILE*    PCS_stdout = &LOCAL_FP[1];
-PCS_FILE*    PCS_stderr = &LOCAL_FP[2];
-
-
+PCS_FILE *PCS_stdin  = &LOCAL_FP[0];
+PCS_FILE *PCS_stdout = &LOCAL_FP[1];
+PCS_FILE *PCS_stderr = &LOCAL_FP[2];

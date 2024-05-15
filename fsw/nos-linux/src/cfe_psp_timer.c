@@ -53,14 +53,31 @@
 */
 #include "cfe_psp.h"
 
+#include "NOS-time.h"
+
+/*
+ * The specific clock ID to use with clock_gettime
+ *
+ * Linux provides some special (non-posix) clock IDs that also
+ * could be relevant/useful:
+ *
+ * CLOCK_MONOTONIC_COARSE - emphasis on read speed at the (possible?) expense of precision
+ * CLOCK_MONOTONIC_RAW - possibly hardware based, not affected by NTP or other sync software
+ * CLOCK_BOOTTIME - includes time the system is suspended.
+ *
+ * Defaulting to the POSIX-specified "MONOTONIC" but it should be possible to use
+ * one of the Linux-specific variants if the target system provides it.
+ */
+#define CFE_PSP_TIMEBASE_REF_CLOCK CLOCK_MONOTONIC
+
 
 /******************* Macro Definitions ***********************/
 
-#define CFE_PSP_TIMER_TICKS_PER_SECOND       1000000     /* Resolution of the least significant 32 bits of the 64 bit
+#define CFE_PSP_TIMER_TICKS_PER_SECOND       1000000    /* Resolution of the least significant 32 bits of the 64 bit
                                                            time stamp returned by OS_BSPGet_Timebase in timer ticks per second.
                                                            The timer resolution for accuracy should not be any slower than 1000000
                                                            ticks per second or 1 us per tick */
-#define CFE_PSP_TIMER_LOW32_ROLLOVER         1000000     /* The number that the least significant 32 bits of the 64 bit
+#define CFE_PSP_TIMER_LOW32_ROLLOVER         1000000    /* The number that the least significant 32 bits of the 64 bit
                                                            time stamp returned by OS_BSPGet_Timebase rolls over.  If the lower 32
                                                            bits rolls at 1 second, then the OS_BSP_TIMER_LOW32_ROLLOVER will be 1000000.
                                                            if the lower 32 bits rolls at its maximum value (2^32) then
@@ -76,11 +93,16 @@
 
 void CFE_PSP_GetTime( OS_time_t *LocalTime)
 {
+    struct timespec now;
 
-    /* since we don't have a hardware register to access like the mcp750,
-     * we use a call to the OS to get the time */
+    if (NOS_clock_gettime(CFE_PSP_TIMEBASE_REF_CLOCK, &now) != 0)
+    {
+        /* unlikely - but avoids undefined behavior */
+        now.tv_sec  = 0;
+        now.tv_nsec = 0;
+    }
 
-    OS_GetLocalTime(LocalTime);
+    *LocalTime = OS_TimeAssembleFromNanoseconds(now.tv_sec, now.tv_nsec);
 
 }/* end CFE_PSP_GetLocalTime */
 
@@ -161,11 +183,17 @@ uint32 CFE_PSP_GetTimerLow32Rollover(void)
 */
 void CFE_PSP_Get_Timebase(uint32 *Tbu, uint32* Tbl)
 {
-   OS_time_t        time;
+   struct timespec now;
 
-   OS_GetLocalTime(&time);
-   *Tbu = time.seconds;
-   *Tbl = time.microsecs;
+    if (NOS_clock_gettime(CFE_PSP_TIMEBASE_REF_CLOCK, &now) != 0)
+    {
+        /* unlikely - but avoids undefined behavior */
+        now.tv_sec  = 0;
+        now.tv_nsec = 0;
+    }
+
+    *Tbu = now.tv_sec & 0xFFFFFFFF;
+    *Tbl = now.tv_nsec;
 }
 
 /******************************************************************************

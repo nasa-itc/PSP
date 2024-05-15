@@ -1,25 +1,23 @@
-/*
-**  GSC-18128-1, "Core Flight Executive Version 6.7"
-**
-**  Copyright (c) 2006-2019 United States Government as represented by
-**  the Administrator of the National Aeronautics and Space Administration.
-**  All Rights Reserved.
-**
-**  Licensed under the Apache License, Version 2.0 (the "License");
-**  you may not use this file except in compliance with the License.
-**  You may obtain a copy of the License at
-**
-**    http://www.apache.org/licenses/LICENSE-2.0
-**
-**  Unless required by applicable law or agreed to in writing, software
-**  distributed under the License is distributed on an "AS IS" BASIS,
-**  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-**  See the License for the specific language governing permissions and
-**  limitations under the License.
-*/
+/************************************************************************
+ * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ *
+ * Copyright (c) 2020 United States Government as represented by the
+ * Administrator of the National Aeronautics and Space Administration.
+ * All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ************************************************************************/
 
 /**
- * \file cfe_psp_exceptionstorage_api.h
+ * \file
  *
  * Provides a generic storage buffer ring for exceptions
  */
@@ -27,15 +25,13 @@
 #ifndef CFE_PSP_EXCEPTIONSTORAGE_API_H_
 #define CFE_PSP_EXCEPTIONSTORAGE_API_H_
 
-#include <cfe_psp.h>
+#include "cfe_psp.h"
 
 /*
  * Abstract types for exception storage.
  * These are made concrete depending on PSP-specific config information.
  */
 struct CFE_PSP_Exception_LogData;
-
-
 
 /* -------------------------------------------------------------
  * Functions implemented in shared layer, invoked by impl layer.
@@ -51,7 +47,7 @@ struct CFE_PSP_Exception_LogData;
  * \param   seq     Sequence number
  * \returns pointer to buffer.
  */
-extern struct CFE_PSP_Exception_LogData* CFE_PSP_Exception_GetBuffer(uint32 seq);
+extern struct CFE_PSP_Exception_LogData *CFE_PSP_Exception_GetBuffer(uint32 seq);
 
 /**
  * \brief Get the next buffer for exception context storage
@@ -62,7 +58,7 @@ extern struct CFE_PSP_Exception_LogData* CFE_PSP_Exception_GetBuffer(uint32 seq)
  *
  * \returns pointer to buffer, or NULL if storage is full.
  */
-extern struct CFE_PSP_Exception_LogData* CFE_PSP_Exception_GetNextContextBuffer(void);
+extern struct CFE_PSP_Exception_LogData *CFE_PSP_Exception_GetNextContextBuffer(void);
 
 /**
  * \brief Finish storage of exception data
@@ -95,6 +91,7 @@ extern void CFE_PSP_Exception_Reset(void);
  *
  * \returns CFE_PSP_SUCCESS on success
  */
-extern int32 CFE_PSP_ExceptionGetSummary_Impl(const struct CFE_PSP_Exception_LogData* Buffer, char *ReasonBuf, uint32 ReasonSize);
+extern int32 CFE_PSP_ExceptionGetSummary_Impl(const struct CFE_PSP_Exception_LogData *Buffer, char *ReasonBuf,
+                                              uint32 ReasonSize);
 
 #endif /* CFE_PSP_EXCEPTIONSTORAGE_API_H_ */

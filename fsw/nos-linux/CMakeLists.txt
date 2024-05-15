@@ -4,23 +4,33 @@
 #
 ######################################################################
 
-# This contains the fully platform-specific code to 
+# This contains the fully platform-specific code to
 # run CFE on this target.
-
-include_directories(inc) 
-
-include_directories(include
-                    ${NOSENGINE_INCLUDE_DIRS}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../../../apps/hwlib/sim/inc)
-message(STATUS "Set NOS Engine Includes")
 
 # Build the pc-linux implementation as a library
 add_library(psp-${CFE_PSP_TARGETNAME}-impl OBJECT
     src/cfe_psp_exception.c
-    src/cfe_psp_memory.c
-    src/cfe_psp_memtab.c
-    src/cfe_psp_ssr.c
+    ../pc-linux/src/cfe_psp_memory.c
+    #../pc-linux/src/cfe_psp_memtab.c
+    ../pc-linux/src/cfe_psp_ssr.c
     src/cfe_psp_start.c
-    src/cfe_psp_support.c
+    ../pc-linux/src/cfe_psp_support.c
     src/cfe_psp_timer.c
-    src/cfe_psp_watchdog.c)
+    ../pc-linux/src/cfe_psp_watchdog.c
+)
+
+# The _GNU_SOURCE directive is required to call non-posix APIs
+# that are specific to the Linux/glibc environment.
+# Code outside the pc-linux PSP should _not_ depend on this.
+target_compile_definitions(psp-${CFE_SYSTEM_PSPNAME}-impl PRIVATE
+    _GNU_SOURCE
+    $<TARGET_PROPERTY:psp_module_api,INTERFACE_COMPILE_DEFINITIONS>
+)
+
+target_include_directories(psp-${CFE_PSP_TARGETNAME}-impl PRIVATE
+    inc
+    ${NOSENGINE_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../apps/hwlib/sim/inc
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../osal/src/os/nos/inc
+    $<TARGET_PROPERTY:psp_module_api,INTERFACE_INCLUDE_DIRECTORIES>
+)
