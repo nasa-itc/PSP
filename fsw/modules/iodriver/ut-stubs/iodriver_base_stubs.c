@@ -19,8 +19,9 @@
  * Generated stub function for CFE_PSP_IODriver_Command()
  * ----------------------------------------------------
  */
-int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location, uint32 CommandCode,
-                               CFE_PSP_IODriver_Arg_t Arg)
+int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location,
+                               uint32                             CommandCode,
+                               CFE_PSP_IODriver_Arg_t             Arg)
 {
     UT_GenStub_SetupReturnBuffer(CFE_PSP_IODriver_Command, int32);
 

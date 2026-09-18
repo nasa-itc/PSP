@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -34,17 +34,19 @@
 /* prototypes normally declared in string.h */
 /* ----------------------------------------- */
 
-extern void * PCS_memcpy(void *dest, const void *src, size_t n);
-extern void * PCS_memset(void *s, int c, size_t n);
+extern int    PCS_memcmp(void *dest, const void *src, size_t n);
+extern void  *PCS_memcpy(void *dest, const void *src, size_t n);
+extern void  *PCS_memset(void *s, int c, size_t n);
+extern void  *PCS_memchr(const void *s, int c, size_t n);
 extern int    PCS_strcmp(const char *s1, const char *s2);
-extern char * PCS_strcpy(char *dest, const char *src);
+extern char  *PCS_strcpy(char *dest, const char *src);
 extern size_t PCS_strlen(const char *s);
 extern int    PCS_strncmp(const char *s1, const char *s2, size_t n);
-extern char * PCS_strncpy(char *dest, const char *src, size_t n);
-extern char * PCS_strchr(const char *s, int c);
-extern char * PCS_strrchr(const char *s, int c);
-extern char * PCS_strcat(char *dest, const char *src);
-extern char * PCS_strncat(char *dest, const char *src, size_t n);
-extern char * PCS_strerror(int errnum);
+extern char  *PCS_strncpy(char *dest, const char *src, size_t n);
+extern char  *PCS_strchr(const char *s, int c);
+extern char  *PCS_strrchr(const char *s, int c);
+extern char  *PCS_strcat(char *dest, const char *src);
+extern char  *PCS_strncat(char *dest, const char *src, size_t n);
+extern char  *PCS_strerror(int errnum);
 
 #endif

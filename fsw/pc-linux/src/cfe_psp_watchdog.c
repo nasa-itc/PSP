@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -60,15 +60,12 @@
 */
 uint32 CFE_PSP_WatchdogValue = CFE_PSP_WATCHDOG_MAX;
 
-/*
-**
-**  Purpose:
-**    To setup the timer resolution and/or other settings custom to this platform.
-**
-**  Arguments:
-**
-**  Return:
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 void CFE_PSP_WatchdogInit(void)
 {
     /*
@@ -79,78 +76,53 @@ void CFE_PSP_WatchdogInit(void)
     CFE_PSP_WatchdogValue = CFE_PSP_WATCHDOG_MAX;
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    Enable the watchdog timer
-**
-**  Arguments:
-**
-**  Return:
-*/
-void CFE_PSP_WatchdogEnable(void) {}
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void CFE_PSP_WatchdogEnable(void)
+{
+}
 
-/******************************************************************************
-**
-**  Purpose:
-**    Disable the watchdog timer
-**
-**  Arguments:
-**
-**  Return:
-*/
-void CFE_PSP_WatchdogDisable(void) {}
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void CFE_PSP_WatchdogDisable(void)
+{
+}
 
-/******************************************************************************
-**
-**  Purpose:
-**    Load the watchdog timer with a count that corresponds to the millisecond
-**    time given in the parameter.
-**
-**  Arguments:
-**    None.
-**
-**  Return:
-**    None
-**
-**  Notes:
-**
-*/
-void CFE_PSP_WatchdogService(void) {}
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void CFE_PSP_WatchdogService(void)
+{
+}
 
-/******************************************************************************
-**
-**  Purpose:
-**    Get the current watchdog value.
-**
-**  Arguments:
-**    none
-**
-**  Return:
-**    the current watchdog value
-**
-**  Notes:
-**
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 uint32 CFE_PSP_WatchdogGet(void)
 {
     return CFE_PSP_WatchdogValue;
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    Get the current watchdog value.
-**
-**  Arguments:
-**    The new watchdog value
-**
-**  Return:
-**    nothing
-**
-**  Notes:
-**
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 void CFE_PSP_WatchdogSet(uint32 WatchdogValue)
 {
     CFE_PSP_WatchdogValue = WatchdogValue;

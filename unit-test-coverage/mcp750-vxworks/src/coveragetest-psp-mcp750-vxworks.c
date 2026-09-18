@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -53,7 +53,9 @@ void Psp_Test_Setup(void)
  * Purpose:
  *   Called by the unit test tool to tear down the app after each test
  */
-void Psp_Test_Teardown(void) {}
+void Psp_Test_Teardown(void)
+{
+}
 
 /* UtTest_Setup
  *
@@ -70,9 +72,30 @@ void UtTest_Setup(void)
     ADD_TEST(CFE_PSP_FlushCaches);
     ADD_TEST(CFE_PSP_GetProcessorId);
     ADD_TEST(CFE_PSP_GetSpacecraftId);
+    ADD_TEST(CFE_PSP_GetProcessorName);
 
     ADD_TEST(CFE_PSP_Exception_GetBuffer);
     ADD_TEST(CFE_PSP_Exception_GetNextContextBuffer);
     ADD_TEST(CFE_PSP_Exception_GetSummary);
     ADD_TEST(CFE_PSP_Exception_CopyContext);
+
+    ADD_TEST(CFE_PSP_StatusToString);
+    ADD_TEST(CFE_PSP_GetVersionString);
+    ADD_TEST(CFE_PSP_GetVersionCodeName);
+    ADD_TEST(CFE_PSP_GetVersionNumber);
+    ADD_TEST(CFE_PSP_GetBuildNumber);
+
+    ADD_TEST(CFE_PSP_ModuleInitList);
+    ADD_TEST(CFE_PSP_ModuleInit);
+    ADD_TEST(CFE_PSP_Module_GetAPIEntry);
+    ADD_TEST(CFE_PSP_Module_SearchNameInList);
+    ADD_TEST(CFE_PSP_Module_FindByName);
+
+    ADD_TEST(CFE_PSP_MemCpy);
+    ADD_TEST(CFE_PSP_MemSet);
+
+    ADD_TEST(CFE_PSP_MemValidateRange);
+    ADD_TEST(CFE_PSP_MemRanges);
+    ADD_TEST(CFE_PSP_MemRangeSet);
+    ADD_TEST(CFE_PSP_MemRangeGet);
 }

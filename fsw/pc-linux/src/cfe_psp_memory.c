@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -93,8 +93,17 @@ void CFE_PSP_InitUserReservedArea(void);
 /*
 **  External Declarations
 */
+#ifdef __riscv
+extern unsigned int _start;
+extern unsigned int __DATA_BEGIN__;
+#define CODE_START_ADDR ((cpuaddr) & _start)
+#define CODE_END_ADDR   ((cpuaddr) & __DATA_BEGIN__)
+#else
 extern unsigned int _init;
 extern unsigned int _fini;
+#define CODE_START_ADDR ((cpuaddr) & _init)
+#define CODE_END_ADDR   ((cpuaddr) & _fini)
+#endif
 
 /*
 ** Global variables
@@ -194,18 +203,12 @@ void CFE_PSP_DeleteCDS(void)
     }
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    This function fetches the size of the OS Critical Data Store area.
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
-
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_GetCDSSize(uint32 *SizeOfCDS)
 {
     int32 return_code;
@@ -223,18 +226,12 @@ int32 CFE_PSP_GetCDSSize(uint32 *SizeOfCDS)
     return return_code;
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    This function writes to the CDS Block.
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
-
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_WriteToCDS(const void *PtrToDataToWrite, uint32 CDSOffset, uint32 NumBytes)
 {
     uint8 *CopyPtr;
@@ -248,7 +245,7 @@ int32 CFE_PSP_WriteToCDS(const void *PtrToDataToWrite, uint32 CDSOffset, uint32 
     {
         if ((CDSOffset < CFE_PSP_CDS_SIZE) && ((CDSOffset + NumBytes) <= CFE_PSP_CDS_SIZE))
         {
-            CopyPtr = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
+            CopyPtr  = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
             CopyPtr += CDSOffset;
             memcpy(CopyPtr, (char *)PtrToDataToWrite, NumBytes);
 
@@ -264,18 +261,12 @@ int32 CFE_PSP_WriteToCDS(const void *PtrToDataToWrite, uint32 CDSOffset, uint32 
     return return_code;
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**   This function reads from the CDS Block
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
-
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_ReadFromCDS(void *PtrToDataToRead, uint32 CDSOffset, uint32 NumBytes)
 {
     uint8 *CopyPtr;
@@ -289,7 +280,7 @@ int32 CFE_PSP_ReadFromCDS(void *PtrToDataToRead, uint32 CDSOffset, uint32 NumByt
     {
         if ((CDSOffset < CFE_PSP_CDS_SIZE) && ((CDSOffset + NumBytes) <= CFE_PSP_CDS_SIZE))
         {
-            CopyPtr = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
+            CopyPtr  = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
             CopyPtr += CDSOffset;
             memcpy((char *)PtrToDataToRead, CopyPtr, NumBytes);
 
@@ -346,12 +337,12 @@ void CFE_PSP_InitResetArea(void)
      * reside in this shared memory segment so it will be preserved on a processor
      * reset.
      */
-    align_mask   = sysconf(_SC_PAGESIZE) - 1; /* align blocks to whole memory pages */
-    total_size   = sizeof(CFE_PSP_LinuxReservedAreaFixedLayout_t);
-    total_size   = (total_size + align_mask) & ~align_mask;
-    reset_offset = total_size;
-    total_size += CFE_PSP_RESET_AREA_SIZE;
-    total_size = (total_size + align_mask) & ~align_mask;
+    align_mask    = sysconf(_SC_PAGESIZE) - 1; /* align blocks to whole memory pages */
+    total_size    = sizeof(CFE_PSP_LinuxReservedAreaFixedLayout_t);
+    total_size    = (total_size + align_mask) & ~align_mask;
+    reset_offset  = total_size;
+    total_size   += CFE_PSP_RESET_AREA_SIZE;
+    total_size    = (total_size + align_mask) & ~align_mask;
 
     /*
     ** connect to (and possibly create) the segment:
@@ -372,8 +363,8 @@ void CFE_PSP_InitResetArea(void)
         CFE_PSP_Panic(CFE_PSP_ERROR);
     }
 
-    FixedBlocksPtr = (CFE_PSP_LinuxReservedAreaFixedLayout_t *)block_addr;
-    block_addr += reset_offset;
+    FixedBlocksPtr  = (CFE_PSP_LinuxReservedAreaFixedLayout_t *)block_addr;
+    block_addr     += reset_offset;
 
     CFE_PSP_ReservedMemoryMap.BootPtr             = &FixedBlocksPtr->BootRecord;
     CFE_PSP_ReservedMemoryMap.ExceptionStoragePtr = &FixedBlocksPtr->ExceptionStorage;
@@ -411,21 +402,12 @@ void CFE_PSP_DeleteResetArea(void)
     }
 }
 
-/*
- */
-/******************************************************************************
-**
-**  Purpose:
-**     This function returns the location and size of the ES Reset information area.
-**     This area is preserved during a processor reset and is used to store the
-**     ER Log, System Log and reset related variables
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_GetResetArea(cpuaddr *PtrToResetArea, uint32 *SizeOfResetArea)
 {
     int32 return_code;
@@ -526,18 +508,12 @@ void CFE_PSP_DeleteUserReservedArea(void)
     }
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    This function returns the location and size of the memory used for the cFE
-**     User reserved area.
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_GetUserReservedArea(cpuaddr *PtrToUserArea, uint32 *SizeOfUserArea)
 {
     int32 return_code;
@@ -583,18 +559,12 @@ void CFE_PSP_InitVolatileDiskMem(void)
     */
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    This function returns the location and size of the memory used for the cFE
-**     volatile disk.
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_GetVolatileDiskMem(cpuaddr *PtrToVolDisk, uint32 *SizeOfVolDisk)
 {
     int32 return_code;
@@ -683,7 +653,8 @@ int32 CFE_PSP_InitProcessorReservedMemory(uint32 RestartType)
         memset(CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockPtr, 0, CFE_PSP_USER_RESERVED_SIZE);
 
         memset(CFE_PSP_ReservedMemoryMap.BootPtr, 0, sizeof(*CFE_PSP_ReservedMemoryMap.BootPtr));
-        memset(CFE_PSP_ReservedMemoryMap.ExceptionStoragePtr, 0,
+        memset(CFE_PSP_ReservedMemoryMap.ExceptionStoragePtr,
+               0,
                sizeof(*CFE_PSP_ReservedMemoryMap.ExceptionStoragePtr));
 
         /*
@@ -743,18 +714,12 @@ void CFE_PSP_DeleteProcessorReservedMemory(void)
 *********************************************************************************
 */
 
-/******************************************************************************
-**
-**  Purpose:
-**    This function returns the start and end address of the kernel text segment.
-**     It may not be implemented on all architectures.
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_GetKernelTextSegmentInfo(cpuaddr *PtrToKernelSegment, uint32 *SizeOfKernelSegment)
 {
     /* Check pointers */
@@ -770,18 +735,12 @@ int32 CFE_PSP_GetKernelTextSegmentInfo(cpuaddr *PtrToKernelSegment, uint32 *Size
     return CFE_PSP_ERROR_NOT_IMPLEMENTED;
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    This function returns the start and end address of the CFE text segment.
-**     It may not be implemented on all architectures.
-**
-**  Arguments:
-**    (none)
-**
-**  Return:
-**    (none)
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_GetCFETextSegmentInfo(cpuaddr *PtrToCFESegment, uint32 *SizeOfCFESegment)
 {
     int32 return_code;
@@ -792,8 +751,8 @@ int32 CFE_PSP_GetCFETextSegmentInfo(cpuaddr *PtrToCFESegment, uint32 *SizeOfCFES
     }
     else
     {
-        *PtrToCFESegment  = (cpuaddr)(&_init);
-        *SizeOfCFESegment = (uint32)(((cpuaddr)&_fini) - ((cpuaddr)&_init));
+        *PtrToCFESegment  = CODE_START_ADDR;
+        *SizeOfCFESegment = (uint32)(CODE_END_ADDR - CODE_START_ADDR);
 
         return_code = CFE_PSP_SUCCESS;
     }

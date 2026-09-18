@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -28,6 +28,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
 
@@ -46,81 +47,72 @@ CFE_PSP_MODULE_DECLARE_SIMPLE(eeprom_mmap_file);
 */
 int32 CFE_PSP_SetupEEPROM(uint32 EEPROMSize, cpuaddr *EEPROMAddress)
 {
-    int         FileDescriptor;
-    int         ReturnStatus;
-    char *      DataBuffer;
-    struct stat StatBuf;
+    int   FileDescriptor;
+    int   ReturnStatus;
+    void *DataBuffer;
+    int   Status;
+    char  LocalFilePath[OS_MAX_PATH_LEN];
 
-    /*
-    ** Check to see if the file has been created.
-    ** If not, create it.
-    ** If so, then open it for read/write
-    */
-    ReturnStatus = stat(EEPROM_FILE, &StatBuf);
-    if (ReturnStatus == -1)
+    DataBuffer = NULL;
+    Status = snprintf(LocalFilePath, sizeof(LocalFilePath), "%s/%s", CFE_PSP_SIMULATED_EEPROM_FILE_PATH, EEPROM_FILE);
+
+    if (Status <= 0)
     {
-        /*
-        ** File does not exist, create it.
-        */
-        FileDescriptor = open(EEPROM_FILE, O_RDWR | O_CREAT, S_IRWXU);
-        if (FileDescriptor == -1)
-        {
-            OS_printf("CFE_PSP: Cannot open EEPROM File: %s\n", EEPROM_FILE);
-            return -1;
-        }
-        else
-        {
-            /*
-            ** Need to seek to the desired EEPROM size
-            */
-            if (lseek(FileDescriptor, EEPROMSize - 1, SEEK_SET) == -1)
-            {
-                OS_printf("CFE_PSP: Cannot Seek to end of EEPROM file.\n");
-                close(FileDescriptor);
-                return -1;
-            }
-
-            /*
-            ** Write a byte at the end of the File
-            */
-            if (write(FileDescriptor, "", 1) != 1)
-            {
-                OS_printf("CFE_PSP: Cannot write to EEPROM file\n");
-                close(FileDescriptor);
-                return -1;
-            }
-        }
+        OS_printf("CFE_PSP: Cannot build EEPROM File path: %s/%s\n", CFE_PSP_SIMULATED_EEPROM_FILE_PATH, EEPROM_FILE);
+        ReturnStatus = CFE_PSP_ERROR;
     }
     else
     {
-        /*
-        ** File exists
-        */
-        FileDescriptor = open(EEPROM_FILE, O_RDWR);
-        if (FileDescriptor == -1)
-        {
-            OS_printf("CFE_PSP: Cannot open EEPROM File: %s\n", EEPROM_FILE);
-            perror("CFE_PSP: open");
-            return -1;
-        }
-    }
+        /* Null terminate path */
+        LocalFilePath[OS_MAX_PATH_LEN - 1] = '\0';
 
-    /*
-    ** Map the file to a memory space
-    */
-    if ((DataBuffer = mmap(NULL, EEPROMSize, PROT_READ | PROT_WRITE, MAP_SHARED, FileDescriptor, 0)) == (void *)(-1))
-    {
-        OS_printf("CFE_PSP: mmap to EEPROM File failed\n");
-        close(FileDescriptor);
-        return -1;
+        FileDescriptor = open(LocalFilePath, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+        if (FileDescriptor < 0)
+        {
+            OS_printf("CFE_PSP: Cannot open EEPROM File: %s\n", LocalFilePath);
+            perror("CFE_PSP: open");
+            ReturnStatus = CFE_PSP_ERROR;
+        }
+        else if (ftruncate(FileDescriptor, EEPROMSize) < 0)
+        {
+            OS_printf("CFE_PSP: ftruncate(%s) error: %s\n", LocalFilePath, strerror(errno));
+            ReturnStatus = CFE_PSP_ERROR;
+        }
+        else
+        {
+            DataBuffer = mmap(NULL, EEPROMSize, PROT_READ | PROT_WRITE, MAP_SHARED, FileDescriptor, 0);
+            if (DataBuffer == (void *)(-1))
+            {
+                OS_printf("CFE_PSP: mmap to EEPROM File failed: %s\n", strerror(errno));
+                ReturnStatus = CFE_PSP_ERROR;
+            }
+            else
+            {
+                ReturnStatus = CFE_PSP_SUCCESS;
+            }
+        }
+
+        /* POSIX says that a mapped pointer counts as a file ref, so the FD
+         * can be safely closed in all cases, success or failure */
+        if (FileDescriptor >= 0)
+        {
+            close(FileDescriptor);
+        }
     }
 
     /*
     ** Return the address to the caller
     */
-    *EEPROMAddress = (cpuaddr)DataBuffer;
+    if (ReturnStatus == CFE_PSP_SUCCESS)
+    {
+        *EEPROMAddress = (cpuaddr)DataBuffer;
+    }
+    else
+    {
+        *EEPROMAddress = 0;
+    }
 
-    return 0;
+    return ReturnStatus;
 }
 
 /* For read/write - As this is mmap'ed we dereference the pointer directly.
@@ -187,10 +179,16 @@ void eeprom_mmap_file_Init(uint32 PspModuleId)
         /*
         ** Install the 2nd memory range as the mapped file ( EEPROM )
         */
-        Status = CFE_PSP_MemRangeSet(1, CFE_PSP_MEM_EEPROM, eeprom_address, eeprom_size, CFE_PSP_MEM_SIZE_DWORD,
+        Status = CFE_PSP_MemRangeSet(1,
+                                     CFE_PSP_MEM_EEPROM,
+                                     eeprom_address,
+                                     eeprom_size,
+                                     CFE_PSP_MEM_SIZE_DWORD,
                                      CFE_PSP_MEM_ATTR_READWRITE);
         OS_printf("CFE_PSP: EEPROM Range (2) created: Start Address = %08lX, Size = %08X Status = %d\n",
-                  (unsigned long)eeprom_address, (unsigned int)eeprom_size, Status);
+                  (unsigned long)eeprom_address,
+                  (unsigned int)eeprom_size,
+                  (int)Status);
     }
     else
     {

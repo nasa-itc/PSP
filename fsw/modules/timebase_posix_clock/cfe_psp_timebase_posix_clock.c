@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -115,41 +115,24 @@ void CFE_PSP_GetTime(OS_time_t *LocalTime)
     *LocalTime = OS_TimeAssembleFromNanoseconds(now.tv_sec, now.tv_nsec);
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    Provides the resolution of the least significant 32 bits of the 64 bit
-**    time stamp returned by CFE_PSP_Get_Timebase in timer ticks per second.
-**    The timer resolution for accuracy should not be any slower than 1000000
-**    ticks per second or 1 us per tick
-**
-**  Arguments:
-**
-**  Return:
-**    The number of timer ticks per second of the time stamp returned
-**    by CFE_PSP_Get_Timebase
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 uint32 CFE_PSP_GetTimerTicksPerSecond(void)
 {
     /* POSIX "struct timespec" resolution is defined as nanoseconds */
     return 1000000000;
 }
 
-/******************************************************************************
-**
-**  Purpose:
-**    Provides the number that the least significant 32 bits of the 64 bit
-**    time stamp returned by CFE_PSP_Get_Timebase rolls over.  If the lower 32
-**    bits rolls at 1 second, then the CFE_PSP_TIMER_LOW32_ROLLOVER will be 1000000.
-**    if the lower 32 bits rolls at its maximum value (2^32) then
-**    CFE_PSP_TIMER_LOW32_ROLLOVER will be 0.
-**
-**  Arguments:
-**
-**  Return:
-**    The number that the least significant 32 bits of the 64 bit time stamp
-**    returned by CFE_PSP_Get_Timebase rolls over.
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 uint32 CFE_PSP_GetTimerLow32Rollover(void)
 {
     /* POSIX "struct timespec" resolution is defined as nanoseconds */

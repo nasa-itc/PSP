@@ -10,7 +10,7 @@ A clear and concise description of what the contribution is.
 **Testing performed**
 Steps taken to test the contribution:
 1. Build steps '...'
-1. Execution steps '...'
+2. Execution steps '...'
 
 **Expected behavior changes**
 A clear and concise description of how this contribution will change behavior and level of impact.
@@ -32,3 +32,9 @@ If included, identify any third party code and provide text file of license
 **Contributor Info - All information REQUIRED for consideration of pull request**
 Full name and company/organization/center of all contributors ("Personal" if individual work)
  - Note CLAs apply to only software contributions.
+
+**For members of the cFS Team**
+Click the `Preview` tab and select the pull request template corresponding to the type of change you are submitting:
+- [Comment/Documentation Change](?expand=1&template=comment_documentation_change.md)
+- [Flight Software Code Change](?expand=1&template=fsw_code_change.md)
+- [Workflows Change](?expand=1&template=workflows_change.md)

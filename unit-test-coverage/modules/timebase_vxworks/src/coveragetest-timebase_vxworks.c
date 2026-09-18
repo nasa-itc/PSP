@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -68,8 +68,8 @@ void ModuleTest_ResetState(void)
 int32 UTHOOK_vxTimeBaseGet(void *UserObj, int32 StubRetcode, uint32 CallCount, const UT_StubContext_t *Context)
 {
     PSP_VxWorks_TimeBaseVal_t *val = UserObj;
-    uint32 *                   u   = UT_Hook_GetArgValueByName(Context, "u", uint32 *);
-    uint32 *                   l   = UT_Hook_GetArgValueByName(Context, "l", uint32 *);
+    uint32                    *u   = UT_Hook_GetArgValueByName(Context, "u", uint32 *);
+    uint32                    *l   = UT_Hook_GetArgValueByName(Context, "l", uint32 *);
 
     *u = val->u;
     *l = val->l;
@@ -160,7 +160,8 @@ void Test_Reducible_1(void)
     CFE_PSP_GetTime(&OsTime);
 
     TestTime = OS_TimeGetTotalMicroseconds(OsTime);
-    UtAssert_True(TestTime == 10376293541461622, "CFE_PSP_GetTime() Microseconds (%lld) == 10376293541461622",
+    UtAssert_True(TestTime == 10376293541461622,
+                  "CFE_PSP_GetTime() Microseconds (%lld) == 10376293541461622",
                   (long long)TestTime);
 }
 
@@ -191,7 +192,8 @@ void Test_Reducible_2(void)
     CFE_PSP_GetTime(&OsTime);
 
     TestTime = OS_TimeGetTotalMicroseconds(OsTime);
-    UtAssert_True(TestTime == 276701161105643274, "CFE_PSP_GetTime() Microseconds(%lld) == 276701161105643274",
+    UtAssert_True(TestTime == 276701161105643274,
+                  "CFE_PSP_GetTime() Microseconds(%lld) == 276701161105643274",
                   (long long)TestTime);
 }
 
@@ -230,6 +232,30 @@ void Test_Get_Timebase(void)
     UtAssert_UINT32_EQ(tbl, VxTime.l);
 }
 
+void Test_PSP_Get_Timebase_NullUpperRegister(void)
+{
+    /* Arrange */
+    uint32 tbl;
+
+    /* Act */
+    UtAssert_VOIDCALL(CFE_PSP_Get_Timebase(NULL, &tbl));
+}
+
+void Test_PSP_Get_Timebase_NullLowerRegister(void)
+{
+    /* Arrange */
+    uint32 tbu;
+
+    /* Act */
+    UtAssert_VOIDCALL(CFE_PSP_Get_Timebase(&tbu, NULL));
+}
+
+void Test_PSP_GetTimeNullLocalTime(void)
+{
+    /* Act */
+    UtAssert_VOIDCALL(CFE_PSP_GetTime(NULL));
+}
+
 /*
  * Macro to add a test case to the list of tests to execute
  */
@@ -246,4 +272,7 @@ void UtTest_Setup(void)
     ADD_TEST(Test_Reducible_2);
     ADD_TEST(Test_Rollover);
     ADD_TEST(Test_Get_Timebase);
+    ADD_TEST(Test_PSP_Get_Timebase_NullUpperRegister);
+    ADD_TEST(Test_PSP_Get_Timebase_NullLowerRegister);
+    ADD_TEST(Test_PSP_GetTimeNullLocalTime);
 }

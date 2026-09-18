@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -41,20 +41,20 @@
 
 static CFE_PSP_ReservedMemoryBootRecord_t UT_BOOTREC;
 
-static const CFE_PSP_ReservedMemoryBootRecord_t UT_DEFAULT_BOOTREC = {0};
+static const CFE_PSP_ReservedMemoryBootRecord_t UT_DEFAULT_BOOTREC = { 0 };
 
-void UT_Setup_ReservedMem_BootRec(void)
+void UT_BootRecAdaptor_InitDefault(void)
 {
     UT_BOOTREC                        = UT_DEFAULT_BOOTREC;
     CFE_PSP_ReservedMemoryMap.BootPtr = &UT_BOOTREC;
 }
 
-uint32 UT_Get_ReservedMem_BootType(void)
+uint32 UT_BootRecAdaptor_Get_BootType(void)
 {
     return UT_BOOTREC.bsp_reset_type;
 }
 
-void UT_Set_ReservedMem_BootType(uint32 reset_type)
+void UT_BootRecAdaptor_Set_BootType(uint32 reset_type)
 {
     UT_BOOTREC.bsp_reset_type = reset_type;
 }

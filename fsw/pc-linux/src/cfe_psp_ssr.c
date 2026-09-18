@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -48,18 +48,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/******************************************************************************
-**
-**  Purpose:
-**    Initializes the Solid State Recorder device. This can be filled in for the platform.
-**
-**  Arguments:
-**    bus, device, device name
-**
-**  Return:
-**    (none)
-*/
-
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 int32 CFE_PSP_InitSSR(uint32 bus, uint32 device, char *DeviceName)
 {
     int32 Status;

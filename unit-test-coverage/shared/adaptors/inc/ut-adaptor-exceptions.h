@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -42,7 +42,6 @@
 #include "cfe_psp_exceptionstorage_api.h"
 
 uint32 UT_Get_Exception_MaxEntries(void);
-size_t UT_Get_Exception_Size(void);
 uint32 UT_Get_Exception_Id(struct CFE_PSP_Exception_LogData *Buffer);
 void   UT_Generate_Exception_Context(struct CFE_PSP_Exception_LogData *Buffer, size_t Size);
 

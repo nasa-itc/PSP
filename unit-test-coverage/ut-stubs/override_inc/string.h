@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -25,8 +25,10 @@
 /* ----------------------------------------- */
 /* mappings for declarations in string.h */
 /* ----------------------------------------- */
+#define memcmp   PCS_memcmp
 #define memcpy   PCS_memcpy
 #define memset   PCS_memset
+#define memchr   PCS_memchr
 #define strcmp   PCS_strcmp
 #define strcpy   PCS_strcpy
 #define strlen   PCS_strlen

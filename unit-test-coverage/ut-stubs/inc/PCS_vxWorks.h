@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -55,6 +55,8 @@ enum
     PCS_NO_WAIT      = 0
 };
 
+#define PCS_EOS '\0'
+
 /* ----------------------------------------- */
 /* types normally defined in vxWorks.h */
 /* ----------------------------------------- */
@@ -69,6 +71,7 @@ typedef int32_t      PCS_INT32;
 typedef uint32_t     PCS_UINT32;
 
 typedef long PCS_Vx_usr_arg_t;
+typedef long PCS_Vx_exit_code_t;
 
 /* Function pointers are used in many VxWorks modules. */
 /*

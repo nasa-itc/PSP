@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -26,8 +26,13 @@
 /* ----------------------------------------- */
 /* mappings for declarations in sysLib.h */
 /* ----------------------------------------- */
-#define sysClkRateGet PCS_sysClkRateGet
-#define sysMemTop     PCS_sysMemTop
+#define sysClkRateGet    PCS_sysClkRateGet
+#define sysMemTop        PCS_sysMemTop
+#define sysPhysMemTop    PCS_sysPhysMemTop
+#define sysModel         PCS_sysModel
+#define sysBspRev        PCS_sysBspRev
+#define sysProcNumGet    PCS_sysProcNumGet
+#define sysAuxClkRateGet PCS_sysAuxClkRateGet
 
 /*
  * These PCI accessors are related to sysLib but the prototype does not necessarily appear in this file

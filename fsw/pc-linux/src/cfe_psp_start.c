@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -132,13 +132,15 @@ static const char *optString = "R:S:C:I:N:h";
 /*
 ** getopts_long long form argument table
 */
-static const struct option longOpts[] = {{"reset", required_argument, NULL, 'R'},
-                                         {"subtype", required_argument, NULL, 'S'},
-                                         {"cpuid", required_argument, NULL, 'C'},
-                                         {"scid", required_argument, NULL, 'I'},
-                                         {"cpuname", required_argument, NULL, 'N'},
-                                         {"help", no_argument, NULL, 'h'},
-                                         {NULL, no_argument, NULL, 0}};
+static const struct option longOpts[] = {
+    { "reset",   required_argument, NULL, 'R' },
+    { "subtype", required_argument, NULL, 'S' },
+    { "cpuid",   required_argument, NULL, 'C' },
+    { "scid",    required_argument, NULL, 'I' },
+    { "cpuname", required_argument, NULL, 'N' },
+    { "help",    no_argument,       NULL, 'h' },
+    { NULL,      no_argument,       NULL, 0   }
+};
 
 /******************************************************************************
 **
@@ -236,6 +238,24 @@ void OS_Application_Startup(void)
     memset(&(CommandData), 0, sizeof(CFE_PSP_CommandData_t));
 
     /*
+     * Set console output to unbuffered
+     *
+     * This PSP uses "printf()" calls before OSAL is initialized,
+     * then changes to OS_printf().  Lines in OS_printf() are buffered
+     * by OSAL and then directly written to the STDOUT_FILENO.
+     *
+     * This can cause unexpected behavior where the early calls to
+     * printf() are seen after the OS_printf() calls, because they
+     * are being buffered in stdio.  This is especially true if the
+     * output is directed to a log file or pipe, where block buffering
+     * is the default, as opposed to line buffering.
+     *
+     * As the only usage of stdout is in the early log messages,
+     * turning off buffering should not have any real downside.
+     */
+    setbuf(stdout, NULL);
+
+    /*
     ** Process the arguments with getopt_long(), then
     ** start the cFE
     */
@@ -250,8 +270,8 @@ void OS_Application_Startup(void)
                 strncpy(CommandData.ResetType, optarg, CFE_PSP_RESET_NAME_LENGTH - 1);
                 CommandData.ResetType[CFE_PSP_RESET_NAME_LENGTH - 1] = 0;
 
-                if ((strncmp(CommandData.ResetType, "PO", CFE_PSP_RESET_NAME_LENGTH) != 0) &&
-                    (strncmp(CommandData.ResetType, "PR", CFE_PSP_RESET_NAME_LENGTH) != 0))
+                if ((strncmp(CommandData.ResetType, "PO", CFE_PSP_RESET_NAME_LENGTH) != 0)
+                    && (strncmp(CommandData.ResetType, "PR", CFE_PSP_RESET_NAME_LENGTH) != 0))
                 {
                     printf("\nERROR: Invalid Reset Type: %s\n\n", CommandData.ResetType);
                     CommandData.GotResetType = 0;
@@ -391,8 +411,8 @@ void OS_Application_Startup(void)
     reset_type = 0;
     if (!CommandData.GotResetType)
     {
-        if (CFE_PSP_ReservedMemoryMap.BootPtr->ValidityFlag == CFE_PSP_BOOTRECORD_VALID ||
-            CFE_PSP_ReservedMemoryMap.BootPtr->ValidityFlag == CFE_PSP_BOOTRECORD_INVALID)
+        if (CFE_PSP_ReservedMemoryMap.BootPtr->ValidityFlag == CFE_PSP_BOOTRECORD_VALID
+            || CFE_PSP_ReservedMemoryMap.BootPtr->ValidityFlag == CFE_PSP_BOOTRECORD_INVALID)
         {
             reset_type = CFE_PSP_ReservedMemoryMap.BootPtr->NextResetType;
         }
@@ -470,8 +490,8 @@ void OS_Application_Run(void)
         /* go idle and wait for an event */
         ret = sigwait(&sigset, &sig);
 
-        if (ret == 0 && !CFE_PSP_IdleTaskState.ShutdownReq && sig == CFE_PSP_EXCEPTION_EVENT_SIGNAL &&
-            GLOBAL_CFE_CONFIGDATA.SystemNotify != NULL)
+        if (ret == 0 && !CFE_PSP_IdleTaskState.ShutdownReq && sig == CFE_PSP_EXCEPTION_EVENT_SIGNAL
+            && GLOBAL_CFE_CONFIGDATA.SystemNotify != NULL)
         {
             /* notify the CFE of the event */
             GLOBAL_CFE_CONFIGDATA.SystemNotify();
@@ -531,7 +551,7 @@ void CFE_PSP_DisplayUsage(char *Name)
     printf("       %s --reset PO --subtype 1 --cpuid 1 --cpuname CPU1 --scid 32\n", Name);
     printf(" \n");
 
-    exit(1);
+    exit(EXIT_FAILURE);
 }
 
 /******************************************************************************

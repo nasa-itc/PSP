@@ -52,7 +52,7 @@ typedef struct
  */
 typedef union
 {
-    void *      Vptr;
+    void       *Vptr;
     const void *ConstVptr;
     const char *ConstStr;
     uint32      U32;
@@ -119,12 +119,12 @@ enum
     CFE_PSP_IODriver_GET_CONFIGURATION = 4, /**< void * argument (device-dependent content) */
 
     /* Sub-channel configuration/mapping opcodes */
-    CFE_PSP_IODriver_LOOKUP_SUBSYSTEM = 5,  /**< const char * argument, looks up ChannelName and returns positive value
+    CFE_PSP_IODriver_LOOKUP_SUBSYSTEM  = 5, /**< const char * argument, looks up ChannelName and returns positive value
                                            for  subsystem ID, negative value for error */
     CFE_PSP_IODriver_LOOKUP_SUBCHANNEL = 6, /**< const char * argument, looks up ChannelName and returns positive value
                                            for subchannel ID, negative value for error */
-    CFE_PSP_IODriver_SET_DIRECTION   = 7,   /**< U32 (CFE_PSP_IODriver_Direction_t) argument as input */
-    CFE_PSP_IODriver_QUERY_DIRECTION = 8,   /**< U32 (CFE_PSP_IODriver_Direction_t) argument as output */
+    CFE_PSP_IODriver_SET_DIRECTION     = 7, /**< U32 (CFE_PSP_IODriver_Direction_t) argument as input */
+    CFE_PSP_IODriver_QUERY_DIRECTION   = 8, /**< U32 (CFE_PSP_IODriver_Direction_t) argument as output */
 
     /*
      * Placeholders for opcodes that could be implemented across a class of devices.
@@ -166,7 +166,8 @@ int32 CFE_PSP_IODriver_FindByName(const char *DriverName, uint32 *PspModuleId);
  *
  * @retval #CFE_PSP_SUCCESS if successful, or error code if not successful
  */
-int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location, uint32 CommandCode,
-                               CFE_PSP_IODriver_Arg_t Arg);
+int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location,
+                               uint32                             CommandCode,
+                               CFE_PSP_IODriver_Arg_t             Arg);
 
 #endif /* IODRIVER_BASE_H */

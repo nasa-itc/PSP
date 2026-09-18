@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -25,13 +25,25 @@
 /* ----------------------------------------- */
 /* constants normally defined in time.h */
 /* ----------------------------------------- */
+#define PCS_CLOCK_REALTIME  0x0 /* system wide realtime clock */
+#define PCS_CLOCK_MONOTONIC 0x1 /* system wide monotonic clock */
 
 /* ----------------------------------------- */
 /* types normally defined in time.h */
 /* ----------------------------------------- */
+typedef long PCS_time_t;
+typedef long PCS_suseconds_t;
+
+struct PCS_timespec
+{
+    PCS_time_t tv_sec;
+    long       tv_nsec;
+};
 
 /* ----------------------------------------- */
 /* prototypes normally declared in time.h */
 /* ----------------------------------------- */
+int PCS_clock_settime(int clk_id, struct PCS_timespec *t);
+int PCS_clock_gettime(int clk_id, struct PCS_timespec *t);
 
 #endif

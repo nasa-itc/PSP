@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -67,13 +67,40 @@ extern PCS_STATUS  PCS_taskDeleteForce(PCS_TASK_ID tid);
 extern PCS_STATUS  PCS_taskSuspend(PCS_TASK_ID tid);
 extern PCS_STATUS  PCS_taskResume(PCS_TASK_ID tid);
 extern PCS_STATUS  PCS_taskPrioritySet(PCS_TASK_ID tid, int newPriority);
-extern PCS_TASK_ID PCS_taskSpawn(char *name, int priority, int options, int stackSize, PCS_FUNCPTR entryPt, int arg1,
-                                 int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9,
-                                 int arg10);
+extern PCS_STATUS  PCS_taskPriorityGet(PCS_TASK_ID tid, int *pPriority);
+extern PCS_TASK_ID PCS_taskSpawn(char       *name,
+                                 int         priority,
+                                 int         options,
+                                 int         stackSize,
+                                 PCS_FUNCPTR entryPt,
+                                 int         arg1,
+                                 int         arg2,
+                                 int         arg3,
+                                 int         arg4,
+                                 int         arg5,
+                                 int         arg6,
+                                 int         arg7,
+                                 int         arg8,
+                                 int         arg9,
+                                 int         arg10);
 
-PCS_STATUS PCS_taskInit(PCS_WIND_TCB *pTcb, char *name, int priority, int options, char *pStackBase, int stackSize,
-                        PCS_FUNCPTR entryPt, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
-                        int arg8, int arg9, int arg10);
+PCS_STATUS PCS_taskInit(PCS_WIND_TCB *pTcb,
+                        char         *name,
+                        int           priority,
+                        int           options,
+                        char         *pStackBase,
+                        int           stackSize,
+                        PCS_FUNCPTR   entryPt,
+                        int           arg1,
+                        int           arg2,
+                        int           arg3,
+                        int           arg4,
+                        int           arg5,
+                        int           arg6,
+                        int           arg7,
+                        int           arg8,
+                        int           arg9,
+                        int           arg10);
 
 PCS_WIND_TCB *PCS_taskTcb(PCS_TASK_ID tid);
 

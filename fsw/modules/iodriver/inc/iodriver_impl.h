@@ -40,7 +40,9 @@
  * Implemented as a single API call with an extendible command code for device-specific ops.  This allows
  * a common API to be used while still allowing full freedom to handle many different device types.
  */
-typedef int32 (*CFE_PSP_IODriver_ApiFunc_t)(uint32 CommandCode, uint16 Instance, uint16 SubChannel,
+typedef int32 (*CFE_PSP_IODriver_ApiFunc_t)(uint32                 CommandCode,
+                                            uint16                 Instance,
+                                            uint16                 SubChannel,
                                             CFE_PSP_IODriver_Arg_t arg);
 
 typedef const struct

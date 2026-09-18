@@ -22,7 +22,7 @@ CFE_PSP_MODULE_DECLARE_SIMPLE(iodriver);
 
 static osal_id_t CFE_PSP_IODriver_Mutex_Table[CFE_PSP_IODRIVER_LOCK_TABLE_SIZE];
 
-const CFE_PSP_IODriver_API_t CFE_PSP_IODriver_DEFAULT_API = {.DeviceCommand = NULL, .DeviceMutex = NULL};
+const CFE_PSP_IODriver_API_t CFE_PSP_IODriver_DEFAULT_API = { .DeviceCommand = NULL, .DeviceMutex = NULL };
 
 void iodriver_Init(uint32 PspModuleId)
 {
@@ -39,7 +39,7 @@ void iodriver_Init(uint32 PspModuleId)
 CFE_PSP_IODriver_API_t *CFE_PSP_IODriver_GetAPI(uint32 PspModuleId)
 {
     int32                   Result;
-    CFE_PSP_ModuleApi_t *   API;
+    CFE_PSP_ModuleApi_t    *API;
     CFE_PSP_IODriver_API_t *CFE_PSP_IODriver_API;
 
     Result = CFE_PSP_Module_GetAPIEntry(PspModuleId, &API);
@@ -91,8 +91,9 @@ int32 CFE_PSP_IODriver_HashMutex(int32 StartHash, int32 Datum)
     return ((StartHash + Datum) & 0x7FFFFFFF);
 }
 
-int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location, uint32 CommandCode,
-                               CFE_PSP_IODriver_Arg_t Arg)
+int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location,
+                               uint32                             CommandCode,
+                               CFE_PSP_IODriver_Arg_t             Arg)
 {
     int32                   Result;
     osal_id_t               MutexId;
@@ -103,9 +104,9 @@ int32 CFE_PSP_IODriver_Command(const CFE_PSP_IODriver_Location_t *Location, uint
     {
         if (API->DeviceMutex != NULL)
         {
-            MutexId =
-                CFE_PSP_IODriver_GetMutex(Location->PspModuleId, API->DeviceMutex(CommandCode, Location->SubsystemId,
-                                                                                  Location->SubchannelId, Arg));
+            MutexId = CFE_PSP_IODriver_GetMutex(
+                Location->PspModuleId,
+                API->DeviceMutex(CommandCode, Location->SubsystemId, Location->SubchannelId, Arg));
         }
         else
         {

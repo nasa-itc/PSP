@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -98,7 +98,7 @@ void CFE_PSP_ExceptionSigHandler(int signo, siginfo_t *si, void *ctxt)
         NumAddrs             = backtrace(Buffer->context_info.bt_addrs, CFE_PSP_MAX_EXCEPTION_BACKTRACE_SIZE);
         Buffer->context_size = offsetof(CFE_PSP_Exception_ContextDataEntry_t, bt_addrs[NumAddrs]);
         /* pthread_self() is signal-safe per POSIX.1-2013 */
-        Buffer->sys_task_id = pthread_self();
+        Buffer->sys_task_id  = pthread_self();
         CFE_PSP_Exception_WriteComplete();
     }
 
@@ -206,9 +206,10 @@ void CFE_PSP_AttachExceptions(void)
      * by calling it once we ensure that it is loaded and therefore
      * it is safe to use in a signal handler.
      */
-    backtrace(Addr, 1);
+    int bt_retvalue = backtrace(Addr, 1);
+    OS_printf("Number of addresses returned by backtrace = %d\n", bt_retvalue);
 
-    OS_printf("CFE_PSP: CFE_PSP_AttachExceptions Called\n");
+    OS_printf("CFE_PSP: %s called\n", __func__);
 
     /*
      * Block most other signals during handler execution.
@@ -244,14 +245,12 @@ void CFE_PSP_AttachExceptions(void)
     CFE_PSP_Exception_Reset();
 }
 
-/*
-**
-**   Purpose: This function sets a default exception environment that can be used
-**
-**   Notes: The exception environment is local to each task Therefore this must be
-**          called for each task that that wants to do floating point and catch exceptions
-*/
-
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 void CFE_PSP_SetDefaultExceptionEnvironment(void)
 {
     /*
@@ -304,7 +303,10 @@ int32 CFE_PSP_ExceptionGetSummary_Impl(const CFE_PSP_Exception_LogData_t *Buffer
             default:
                 ComputedReason = "Unknown SIGFPE";
         }
-        (void)snprintf(ReasonBuf, ReasonSize, "%s at ip 0x%lx", ComputedReason,
+        (void)snprintf(ReasonBuf,
+                       ReasonSize,
+                       "%s at ip 0x%lx",
+                       ComputedReason,
                        (unsigned long)Buffer->context_info.si.si_addr);
     }
     else if (Buffer->context_info.si.si_signo == SIGINT)

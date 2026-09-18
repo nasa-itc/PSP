@@ -28,14 +28,18 @@ function(add_psp_covtest MODULE_NAME TESTCASE_SRC UT_SRCS)
         ${UT_COVERAGE_COMPILE_FLAGS}
     )
 
-    target_include_directories(${OBJECT_TARGET} PRIVATE
+    target_include_directories(${OBJECT_TARGET} BEFORE PRIVATE
         ${PSPCOVERAGE_SOURCE_DIR}/ut-stubs/override_inc # overrides for system headers
+    )
+
+    target_include_directories(${OBJECT_TARGET} PRIVATE
         ${PSPCOVERAGE_SOURCE_DIR}/shared/inc
         ${CFEPSP_SOURCE_DIR}/fsw/inc                    # PSP public API
         ${CFEPSP_SOURCE_DIR}/fsw/shared/inc             # all PSP shared headers
         ${CFE_SOURCE_DIR}/cmake/target/inc              # for sysconfig headers
         $<TARGET_PROPERTY:osal,INTERFACE_INCLUDE_DIRECTORIES>  # use headers from OSAL
-    )
+        $<TARGET_PROPERTY:psp_module_api,INTERFACE_INCLUDE_DIRECTORIES>
+   )
 
     # Compile a test runner application, which contains the
     # actual coverage test code (test cases) and the unit under test
@@ -50,6 +54,7 @@ function(add_psp_covtest MODULE_NAME TESTCASE_SRC UT_SRCS)
     target_link_libraries(${RUNNER_TARGET}
         ${UT_COVERAGE_LINK_FLAGS}
         psp_module_api
+        ut_psp_api_stubs
         ut_psp_libc_stubs
         ut_osapi_stubs
         ut_assert
@@ -61,8 +66,20 @@ function(add_psp_covtest MODULE_NAME TESTCASE_SRC UT_SRCS)
         install(TARGETS ${RUNNER_TARGET} DESTINATION ${TGT}/${UT_INSTALL_SUBDIR})
     endforeach()
 
-endfunction(add_psp_covtest)
+endfunction()
 
 
 # a list of modules for which there is a coverage test implemented
 add_subdirectory(timebase_vxworks)
+add_subdirectory(vxworks_sysmon)
+add_subdirectory(ram_notimpl)
+add_subdirectory(ram_direct)
+add_subdirectory(port_notimpl)
+add_subdirectory(port_direct)
+add_subdirectory(eeprom_notimpl)
+add_subdirectory(eeprom_mmap_file)
+add_subdirectory(eeprom_direct)
+add_subdirectory(iodriver)
+add_subdirectory(soft_timebase)
+add_subdirectory(network_pc686_rtems)
+add_subdirectory(endian_api)

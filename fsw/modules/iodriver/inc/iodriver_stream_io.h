@@ -34,7 +34,7 @@ typedef struct
 typedef struct
 {
     uint32 BufferSize; /**<  Size of data buffer */
-    void * BufferMem;  /**<  Pointer to data buffer to store read data */
+    void  *BufferMem;  /**<  Pointer to data buffer to store read data */
 } CFE_PSP_IODriver_ReadStreamBuffer_t;
 
 /**

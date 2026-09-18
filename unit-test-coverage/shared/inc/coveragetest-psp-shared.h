@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -42,9 +42,30 @@
 #include "uttest.h"
 #include "utstubs.h"
 
+void Test_CFE_PSP_StatusToString(void);
+
+void Test_CFE_PSP_GetVersionString(void);
+void Test_CFE_PSP_GetVersionCodeName(void);
+void Test_CFE_PSP_GetVersionNumber(void);
+void Test_CFE_PSP_GetBuildNumber(void);
+
 void Test_CFE_PSP_Exception_GetBuffer(void);
 void Test_CFE_PSP_Exception_GetNextContextBuffer(void);
 void Test_CFE_PSP_Exception_GetSummary(void);
 void Test_CFE_PSP_Exception_CopyContext(void);
+
+void Test_CFE_PSP_ModuleInitList(void);
+void Test_CFE_PSP_ModuleInit(void);
+void Test_CFE_PSP_Module_GetAPIEntry(void);
+void Test_CFE_PSP_Module_SearchNameInList(void);
+void Test_CFE_PSP_Module_FindByName(void);
+
+void Test_CFE_PSP_MemCpy(void);
+void Test_CFE_PSP_MemSet(void);
+
+void Test_CFE_PSP_MemValidateRange(void);
+void Test_CFE_PSP_MemRanges(void);
+void Test_CFE_PSP_MemRangeSet(void);
+void Test_CFE_PSP_MemRangeGet(void);
 
 #endif

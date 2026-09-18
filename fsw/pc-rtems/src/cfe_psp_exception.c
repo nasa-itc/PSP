@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -65,7 +65,7 @@
 */
 void CFE_PSP_AttachExceptions(void)
 {
-    OS_printf("CFE_PSP: CFE_PSP_AttachExceptions Called\n");
+    OS_printf("CFE_PSP: %s called\n", __func__);
     CFE_PSP_Exception_Reset();
 }
 
@@ -78,11 +78,12 @@ int32 CFE_PSP_ExceptionGetSummary_Impl(const CFE_PSP_Exception_LogData_t *Buffer
     return CFE_PSP_ERROR_NOT_IMPLEMENTED;
 }
 
-/*
-**
-**   Purpose: This function sets a default exception environment that can be used
-**
-**   Notes: The exception environment is local to each task Therefore this must be
-**          called for each task that that wants to do floating point and catch exceptions
-*/
-void CFE_PSP_SetDefaultExceptionEnvironment(void) {}
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
+void CFE_PSP_SetDefaultExceptionEnvironment(void)
+{
+}

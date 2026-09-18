@@ -40,7 +40,7 @@ typedef struct
 typedef struct
 {
     uint32 BufferSize; /**<  Number of channels in the i/o structure (length of "samples" array) */
-    void * BufferMem;
+    void  *BufferMem;
 } CFE_PSP_IODriver_ReadPacketBuffer_t;
 
 /**

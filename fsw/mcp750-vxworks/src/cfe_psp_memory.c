@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -130,10 +130,10 @@ int32 CFE_PSP_WriteToCDS(const void *PtrToDataToWrite, uint32 CDSOffset, uint32 
     }
     else
     {
-        if ((CDSOffset < CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize) &&
-            ((CDSOffset + NumBytes) <= CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize))
+        if ((CDSOffset < CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize)
+            && ((CDSOffset + NumBytes) <= CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize))
         {
-            CopyPtr = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
+            CopyPtr  = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
             CopyPtr += CDSOffset;
             memcpy(CopyPtr, (char *)PtrToDataToWrite, NumBytes);
 
@@ -172,10 +172,10 @@ int32 CFE_PSP_ReadFromCDS(void *PtrToDataToRead, uint32 CDSOffset, uint32 NumByt
     }
     else
     {
-        if ((CDSOffset < CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize) &&
-            ((CDSOffset + NumBytes) <= CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize))
+        if ((CDSOffset < CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize)
+            && ((CDSOffset + NumBytes) <= CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize))
         {
-            CopyPtr = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
+            CopyPtr  = CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr;
             CopyPtr += CDSOffset;
             memcpy((char *)PtrToDataToRead, CopyPtr, NumBytes);
 
@@ -186,7 +186,7 @@ int32 CFE_PSP_ReadFromCDS(void *PtrToDataToRead, uint32 CDSOffset, uint32 NumByt
             return_code = CFE_PSP_ERROR;
         }
 
-    } /* end if PtrToDataToWrite == NULL */
+    } /* end if PtrToDataToRead == NULL */
 
     return return_code;
 }
@@ -319,9 +319,7 @@ int32 CFE_PSP_GetVolatileDiskMem(cpuaddr *PtrToVolDisk, uint32 *SizeOfVolDisk)
 */
 int32 CFE_PSP_InitProcessorReservedMemory(uint32 RestartType)
 {
-    int32 return_code;
-
-    if (RestartType != CFE_PSP_RST_TYPE_PROCESSOR)
+    if (RestartType == CFE_PSP_RST_TYPE_POWERON)
     {
         OS_printf("CFE_PSP: Clearing Processor Reserved Memory.\n");
         memset(MCP750_ReservedMemBlock.BlockPtr, 0, MCP750_ReservedMemBlock.BlockSize);
@@ -331,8 +329,8 @@ int32 CFE_PSP_InitProcessorReservedMemory(uint32 RestartType)
         */
         CFE_PSP_ReservedMemoryMap.BootPtr->bsp_reset_type = CFE_PSP_RST_TYPE_PROCESSOR;
     }
-    return_code = CFE_PSP_SUCCESS;
-    return return_code;
+
+    return CFE_PSP_SUCCESS;
 }
 
 /******************************************************************************
@@ -363,33 +361,33 @@ void CFE_PSP_SetupReservedMemoryMap(void)
 
     memset(&CFE_PSP_ReservedMemoryMap, 0, sizeof(CFE_PSP_ReservedMemoryMap));
 
-    CFE_PSP_ReservedMemoryMap.BootPtr = (CFE_PSP_ReservedMemoryBootRecord_t *)end_addr;
-    end_addr += sizeof(CFE_PSP_ReservedMemoryBootRecord_t);
-    end_addr = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
+    CFE_PSP_ReservedMemoryMap.BootPtr  = (CFE_PSP_ReservedMemoryBootRecord_t *)end_addr;
+    end_addr                          += sizeof(CFE_PSP_ReservedMemoryBootRecord_t);
+    end_addr                           = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
 
-    CFE_PSP_ReservedMemoryMap.ExceptionStoragePtr = (CFE_PSP_ExceptionStorage_t *)end_addr;
-    end_addr += sizeof(CFE_PSP_ExceptionStorage_t);
-    end_addr = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
+    CFE_PSP_ReservedMemoryMap.ExceptionStoragePtr  = (CFE_PSP_ExceptionStorage_t *)end_addr;
+    end_addr                                      += sizeof(CFE_PSP_ExceptionStorage_t);
+    end_addr                                       = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
 
-    CFE_PSP_ReservedMemoryMap.ResetMemory.BlockPtr  = (void *)end_addr;
-    CFE_PSP_ReservedMemoryMap.ResetMemory.BlockSize = GLOBAL_CONFIGDATA.CfeConfig->ResetAreaSize;
-    end_addr += CFE_PSP_ReservedMemoryMap.ResetMemory.BlockSize;
-    end_addr = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
+    CFE_PSP_ReservedMemoryMap.ResetMemory.BlockPtr   = (void *)end_addr;
+    CFE_PSP_ReservedMemoryMap.ResetMemory.BlockSize  = GLOBAL_CONFIGDATA.CfeConfig->ResetAreaSize;
+    end_addr                                        += CFE_PSP_ReservedMemoryMap.ResetMemory.BlockSize;
+    end_addr                                         = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
 
     CFE_PSP_ReservedMemoryMap.VolatileDiskMemory.BlockPtr = (void *)end_addr;
     CFE_PSP_ReservedMemoryMap.VolatileDiskMemory.BlockSize =
         GLOBAL_CONFIGDATA.CfeConfig->RamDiskSectorSize * GLOBAL_CONFIGDATA.CfeConfig->RamDiskTotalSectors;
     end_addr += CFE_PSP_ReservedMemoryMap.VolatileDiskMemory.BlockSize;
-    end_addr = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
+    end_addr  = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
 
-    CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr  = (void *)end_addr;
-    CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize = GLOBAL_CONFIGDATA.CfeConfig->CdsSize;
-    end_addr += CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize;
-    end_addr = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
+    CFE_PSP_ReservedMemoryMap.CDSMemory.BlockPtr   = (void *)end_addr;
+    CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize  = GLOBAL_CONFIGDATA.CfeConfig->CdsSize;
+    end_addr                                      += CFE_PSP_ReservedMemoryMap.CDSMemory.BlockSize;
+    end_addr                                       = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
 
-    CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockPtr  = (void *)end_addr;
-    CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockSize = GLOBAL_CONFIGDATA.CfeConfig->UserReservedSize;
-    end_addr += CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockSize;
+    CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockPtr   = (void *)end_addr;
+    CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockSize  = GLOBAL_CONFIGDATA.CfeConfig->UserReservedSize;
+    end_addr                                               += CFE_PSP_ReservedMemoryMap.UserReservedMemory.BlockSize;
     end_addr = (end_addr + CFE_PSP_MEMALIGN_MASK) & ~CFE_PSP_MEMALIGN_MASK;
 
     /* The total size of the entire block is the difference in address */
@@ -397,7 +395,8 @@ void CFE_PSP_SetupReservedMemoryMap(void)
     MCP750_ReservedMemBlock.BlockSize = end_addr - start_addr;
 
     OS_printf("CFE_PSP: MCP750 Reserved Memory Block at 0x%08lx, Total Size = 0x%lx\n",
-              (unsigned long)MCP750_ReservedMemBlock.BlockPtr, (unsigned long)MCP750_ReservedMemBlock.BlockSize);
+              (unsigned long)MCP750_ReservedMemBlock.BlockPtr,
+              (unsigned long)MCP750_ReservedMemBlock.BlockSize);
 
     /*
      * Set up the "RAM" entry in the memory table.
@@ -410,7 +409,9 @@ void CFE_PSP_SetupReservedMemoryMap(void)
  * No action on MCP750 - reserved block is statically allocated at sysMemTop.
  * Implemented for API consistency with other PSPs.
  */
-void CFE_PSP_DeleteProcessorReservedMemory(void) {}
+void CFE_PSP_DeleteProcessorReservedMemory(void)
+{
+}
 
 /*
 *********************************************************************************
@@ -478,7 +479,7 @@ int32 CFE_PSP_GetCFETextSegmentInfo(cpuaddr *PtrToCFESegment, uint32 *SizeOfCFES
     MODULE_ID   cFEModuleId;
     MODULE_INFO cFEModuleInfo;
     cpuaddr     GetModuleIdAddr;
-    MODULE_ID (*GetModuldIdFunc)(void);
+    MODULE_ID (*GetModuleIdFunc)(void);
 
     if (PtrToCFESegment == NULL || SizeOfCFESegment == NULL)
     {
@@ -503,8 +504,8 @@ int32 CFE_PSP_GetCFETextSegmentInfo(cpuaddr *PtrToCFESegment, uint32 *SizeOfCFES
         return_code     = OS_SymbolLookup(&GetModuleIdAddr, "GetCfeCoreModuleID");
         if (return_code == OS_SUCCESS && GetModuleIdAddr != 0)
         {
-            GetModuldIdFunc = (MODULE_ID(*)(void))GetModuleIdAddr;
-            cFEModuleId     = GetModuldIdFunc();
+            GetModuleIdFunc = (MODULE_ID(*)(void))GetModuleIdAddr;
+            cFEModuleId     = GetModuleIdFunc();
         }
 
         /*
@@ -532,7 +533,7 @@ int32 CFE_PSP_GetCFETextSegmentInfo(cpuaddr *PtrToCFESegment, uint32 *SizeOfCFES
             }
             else
             {
-                return_code = CFE_PSP_SUCCESS;
+                return_code = CFE_PSP_ERROR;
             }
         }
     }

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -27,15 +27,22 @@
 /*
  * Development Build Macro Definitions
  */
-#define CFE_PSP_IMPL_BUILD_NUMBER   82
-#define CFE_PSP_IMPL_BUILD_BASELINE "v1.6.0-rc4"
+#define CFE_PSP_IMPL_BUILD_NUMBER   1
+#define CFE_PSP_IMPL_BUILD_BASELINE "v7.0.1"
+#define CFE_PSP_BUILD_DEV_CYCLE     "v7.0.1" /**< @brief Development: Release name for current development cycle */
+#define CFE_PSP_BUILD_CODENAME      "Draco"  /**< @brief: Development: Code name for the current build */
 
 /*
  * Version Macros, see \ref cfsversions for definitions.
  */
-#define CFE_PSP_IMPL_MAJOR_VERSION 1  /*!< @brief Major version number */
-#define CFE_PSP_IMPL_MINOR_VERSION 4  /*!< @brief Minor version number */
-#define CFE_PSP_IMPL_REVISION      99 /*!< @brief Revision version number. Value of 99 indicates a development version.*/
+#define CFE_PSP_IMPL_MAJOR_VERSION 7 /*!< @brief Major version number */
+#define CFE_PSP_IMPL_MINOR_VERSION 0 /*!< @brief Minor version number */
+#define CFE_PSP_IMPL_REVISION      1 /*!< @brief Revision version number. Value of 0 indicates a development version.*/
+
+/**
+ * @brief Last official release.
+ */
+#define CFE_PSP_LAST_OFFICIAL "v7.0.1"
 
 /*!
  * @brief Mission revision.
@@ -45,8 +52,6 @@
  * cFS open-source development use (pending resolution of nasa/cFS#440)
  */
 #define CFE_PSP_IMPL_MISSION_REV 0xFF
-
-#define CFE_PSP_IMPL_CODENAME "Draco"
 
 /*
  * Tools to construct version string
@@ -61,12 +66,12 @@
  */
 #define CFE_PSP_IMPL_VERSION CFE_PSP_IMPL_BUILD_BASELINE "+dev" CFE_PSP_IMPL_STR(CFE_PSP_IMPL_BUILD_NUMBER)
 
-/*! @brief DEVELOPMENT Build Version String.
- *  @details Reports the current development build's baseline, number, and name. Also includes a note about the latest
- * official version. @n See @ref cfsversions for format differences between development and release versions.
+/**
+ * @brief Max Version String length.
+ *
+ * Maximum length that a tblCRCTool version string can be.
+ *
  */
-#define CFE_PSP_IMPL_VERSION_STRING                \
-    " PSP DEVELOPMENT BUILD " CFE_PSP_IMPL_VERSION \
-    ", Last Official Release: psp v1.4.0" /* For full support please use this version */
+#define CFE_PSP_CFG_MAX_VERSION_STR_LEN 256
 
 #endif

@@ -38,7 +38,7 @@ typedef struct
 {
     uint32 DeviceAddress;
     uint32 BufferSize;
-    void * BufferMem;
+    void  *BufferMem;
 } CFE_PSP_IODriver_ReadMemoryBuffer_t;
 
 /**

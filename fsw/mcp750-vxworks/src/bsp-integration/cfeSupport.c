@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -85,7 +85,7 @@ int startCfeCore(char *cfevolume, char *cfepath)
     int       status;
     MODULE_ID moduleID;
     SYM_TYPE  symType;
-    char *    symValue;
+    char     *symValue;
     void (*cFEFuncPtr)(void);
     char cfeCorePath[64];
 

@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -152,13 +152,12 @@ void CFE_PSP_ExceptionHook(TASK_ID task_id, int vector, void *vpEsf)
     }
 }
 
-/*
-**
-**   Purpose: This function sets a default exception environment that can be used
-**
-**   Notes: The exception environment is local to each task Therefore this must be
-**          called for each task that that wants to do floating point and catch exceptions
-*/
+/*----------------------------------------------------------------
+ *
+ * Implemented per public API
+ * See description in header file for argument/return detail
+ *
+ *-----------------------------------------------------------------*/
 void CFE_PSP_SetDefaultExceptionEnvironment(void)
 {
     vxMsrSet(vxMsrGet() | _PPC_MSR_EE | /* enable the external interrupt */
@@ -194,8 +193,12 @@ int32 CFE_PSP_ExceptionGetSummary_Impl(const CFE_PSP_Exception_LogData_t *Buffer
         TaskName = "NULL";
     }
 
-    snprintf(ReasonBuf, ReasonSize, "Vector=0x%06X, vxWorks Task Name=%s, Task ID=0x%08X", Buffer->context_info.vector,
-             TaskName, Buffer->sys_task_id);
+    snprintf(ReasonBuf,
+             ReasonSize,
+             "Vector=0x%06X, vxWorks Task Name=%s, Task ID=0x%08X",
+             Buffer->context_info.vector,
+             TaskName,
+             Buffer->sys_task_id);
 
     return CFE_PSP_SUCCESS;
 }

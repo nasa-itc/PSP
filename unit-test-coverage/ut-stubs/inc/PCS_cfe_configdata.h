@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -34,7 +34,7 @@
 /**
  * Stub for the main system entry function implemented in CFE ES
  */
-void PCS_SystemMain(uint32 StartType, uint32 StartSubtype, uint32 ModeId, const char *StartFilePath);
+void PCS_SystemMain(uint32_t StartType, uint32_t StartSubtype, uint32_t ModeId, const char *StartFilePath);
 
 /**
  * Stub for 1Hz ISR function implemented in CFE TIME

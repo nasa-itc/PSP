@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -56,8 +56,10 @@ void Test_CFE_PSP_Exception_GetBuffer(void)
     Ptr1 = CFE_PSP_Exception_GetBuffer(1);
     UtAssert_True(Ptr1 != NULL, "CFE_PSP_Exception_GetBuffer(1) (%p) != NULL", (void *)Ptr1);
 
-    UtAssert_True(Ptr0 != Ptr1, "CFE_PSP_Exception_GetBuffer(0) (%p) != CFE_PSP_Exception_GetBuffer(1) (%p)",
-                  (void *)Ptr0, (void *)Ptr1);
+    UtAssert_True(Ptr0 != Ptr1,
+                  "CFE_PSP_Exception_GetBuffer(0) (%p) != CFE_PSP_Exception_GetBuffer(1) (%p)",
+                  (void *)Ptr0,
+                  (void *)Ptr1);
 }
 
 void Test_CFE_PSP_Exception_GetNextContextBuffer(void)
@@ -128,7 +130,11 @@ void Test_CFE_PSP_Exception_GetSummary(void)
 
     UtAssert_NOT_NULL(CFE_PSP_Exception_GetNextContextBuffer());
     CFE_PSP_Exception_WriteComplete();
-    UtAssert_INT32_EQ(CFE_PSP_Exception_GetSummary(&LogId, &TaskId, NULL, 0), CFE_PSP_SUCCESS);
+    UtAssert_INT32_EQ(CFE_PSP_Exception_GetSummary(&LogId, &TaskId, NULL, sizeof(ReasonBuf)), CFE_PSP_SUCCESS);
+
+    UtAssert_NOT_NULL(CFE_PSP_Exception_GetNextContextBuffer());
+    CFE_PSP_Exception_WriteComplete();
+    UtAssert_INT32_EQ(CFE_PSP_Exception_GetSummary(&LogId, &TaskId, ReasonBuf, 0), CFE_PSP_SUCCESS);
 
     UtAssert_NOT_NULL(CFE_PSP_Exception_GetNextContextBuffer());
     CFE_PSP_Exception_WriteComplete();
@@ -147,8 +153,13 @@ void Test_CFE_PSP_Exception_CopyContext(void)
     uint32                            Count;
     uint32                            SmallBuf[1];
     uint32                            LargeBuf[4];
+    uint32                            CFE_PSP_EXCEPTION_ID_BASE;
 
     CFE_PSP_Exception_Reset();
+    CFE_PSP_EXCEPTION_ID_BASE = ((OS_OBJECT_TYPE_USER + 0x101) << OS_OBJECT_TYPE_SHIFT);
+    LogId                     = OS_OBJECT_INDEX_MASK + OS_OBJECT_INDEX_MASK + CFE_PSP_EXCEPTION_ID_BASE;
+    UtAssert_INT32_EQ(CFE_PSP_Exception_CopyContext(LogId, SmallBuf, sizeof(SmallBuf)), CFE_PSP_NO_EXCEPTION_DATA);
+    UtAssert_INT32_EQ(CFE_PSP_Exception_CopyContext(0, NULL, sizeof(SmallBuf)), CFE_PSP_INVALID_POINTER);
     UtAssert_INT32_EQ(CFE_PSP_Exception_CopyContext(0, SmallBuf, sizeof(SmallBuf)), CFE_PSP_NO_EXCEPTION_DATA);
 
     Ptr = CFE_PSP_Exception_GetNextContextBuffer();

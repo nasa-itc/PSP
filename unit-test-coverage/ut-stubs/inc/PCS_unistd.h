@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -43,6 +43,7 @@
 /* ----------------------------------------- */
 
 extern int         PCS_close(int fd);
+extern int         PCS_ftruncate(int fd, PCS_off_t len);
 extern PCS_gid_t   PCS_getegid(void);
 extern PCS_uid_t   PCS_geteuid(void);
 extern long int    PCS_gethostid(void);
@@ -52,6 +53,6 @@ extern PCS_off_t   PCS_lseek(int fd, PCS_off_t offset, int whence);
 extern PCS_ssize_t PCS_read(int fd, void *buf, size_t nbytes);
 extern int         PCS_rmdir(const char *path);
 extern long int    PCS_sysconf(int name);
-extern PCS_ssize_t PCS_write(int fd, const void *buf, size_t n);
+extern PCS_ssize_t PCS_write(int fd, const void *buf, size_t nbytes);
 
 #endif

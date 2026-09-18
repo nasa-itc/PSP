@@ -1,7 +1,7 @@
 /************************************************************************
- * NASA Docket No. GSC-18,719-1, and identified as “core Flight System: Bootes”
+ * NASA Docket No. GSC-19,200-1, and identified as "cFS Draco"
  *
- * Copyright (c) 2020 United States Government as represented by the
+ * Copyright (c) 2023 United States Government as represented by the
  * Administrator of the National Aeronautics and Space Administration.
  * All Rights Reserved.
  *
@@ -73,9 +73,9 @@
 /* prototypes normally declared in vxPpcLib.h */
 /* ----------------------------------------- */
 extern void     PCS_vxTimeBaseGet(uint32_t *u, uint32_t *l);
-extern void     PCS_vxMsrSet(uint32_t);
+extern void     PCS_vxMsrSet(uint32_t r);
 extern uint32_t PCS_vxMsrGet(void);
-extern void     PCS_vxFpscrSet(uint32_t);
+extern void     PCS_vxFpscrSet(uint32_t r);
 extern uint32_t PCS_vxFpscrGet(void);
 extern uint32_t PCS_vxDecGet(void);
 
