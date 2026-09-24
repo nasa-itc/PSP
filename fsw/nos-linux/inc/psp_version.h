@@ -46,7 +46,7 @@
  */
 #define CFE_PSP_IMPL_MISSION_REV 0xFF
 
-#define CFE_PSP_IMPL_CODENAME "Draco"
+#define CFE_PSP_BUILD_CODENAME "Draco"
 
 /*
  * Tools to construct version string
